@@ -1,0 +1,86 @@
+.container-subheader {
+    margin-top: -2rem;
+    background-color: #bbbaba;
+    min-height: 25vh;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    padding-right: 4rem;
+    font-size: calc(4px + 2vmin);
+    color: white;
+    border-radius: 0px 0px 0px 50px;
+    padding-top: 2rem;
+    box-shadow: inset 0px 5px 5px rgba(0,0,0,.15); 
+    box-shadow: 0px 10px 10px rgba(0,0,0,.15);
+    margin-bottom: 18px;
+  }
+
+  .row-subheader{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-left: 3rem;
+  }
+  .time{
+    font-size: medium;
+    margin-top: 9rem;
+    
+    border-radius: 15px;
+    display: inline-flex;
+    justify-content: space-between;
+  }
+  .horas{
+    color: #E4181D;
+    margin-left: 10px;
+  }
+
+  .buttons{
+      font-size: medium;
+      margin-top: 8rem;
+      height: 2.5rem;
+      border-radius: 15px;
+      display: inline-flex;
+      justify-content: space-between;
+  }
+  button.dia{
+      width: 4rem;
+      padding: 0.5rem;
+      
+    border: 1px solid white;
+    background-color: #bbbaba;
+    border-radius: 25px 0 0 25px ;
+    color: rgb(92, 92, 92);
+    border-right: none;
+  }
+  button.semana{
+      width: 5rem;
+      border: 1px solid white;
+      border-left: none;
+      border-right: none;
+      background-color: #bbbaba;
+      color: rgb(92, 92, 92);
+    }
+    button.mes{
+        width: 4rem;
+        border: 1px solid white;
+        background-color: #bbbaba;
+        border-left: none;
+        border-radius: 0px 25px 25px 0px ;
+        color: rgb(92, 92, 92);
+        
+    }
+    button:hover{
+      background-color: white;
+      color: #E4181D
+    }
+   button.active {
+    box-shadow: inset 0px 5px 5px rgba(0,0,0,.15); 
+    background-color: #E4181D;  
+    color: rgb(255, 255, 255);
+    };
+  
+
+    h5.horas{
+        margin-left: 1rem;
+        color: #E4181D;
+    }

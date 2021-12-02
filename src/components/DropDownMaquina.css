@@ -1,0 +1,15 @@
+.dropdown{   
+    cursor: pointer;
+    
+}
+
+.dropdownlist{
+    text-align: left;
+    padding: 1rem;
+}
+.dropdownitem:hover{
+    background-color: #E4181D;
+    color: white;
+}
+
+
