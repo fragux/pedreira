@@ -38,7 +38,7 @@ console.log(maquina.maquina.timeTotal);
     )
   
     return (
-      <div className="row-chart">            
+      <div className="row">            
         <Chart data={data} axes={axes} style={{
           width: '90vw',
           height: '49vh',

@@ -77,7 +77,7 @@ componentDidMount() {
 render(){
   //const machine = this.renderMaquina(this.parentData);
   //this.renderTimeTotal()
-  
+ 
       return (
       <div className="App">
         <header className="App-header">

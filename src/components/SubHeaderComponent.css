@@ -69,18 +69,97 @@
         color: rgb(92, 92, 92);
         
     }
+    button.active {
+      box-shadow: inset 0px 5px 5px rgba(0,0,0,.15); 
+      background-color: #E4181D;  
+      color: rgb(255, 255, 255);
+    };
+    
+    
+    h5.horas{
+      margin-left: 1rem;
+      color: #E4181D;
+    }
+    
+    button.erros{
+      width: 7rem;
+          
+      border: none;
+      background-color: #000000;
+      border-radius: 25px 25px 25px 25px ;
+      color: white;
+      border-right: none;
+    }
+
+    button.configurar{
+      width: 7rem;
+      margin-left: 0.5rem;
+      border:none;
+      background-color: white;
+      border-radius: 25px 25px 25px 25px ;
+      color: E4181D;
+      border-right: none;
+    }
+    
     button:hover{
       background-color: white;
       color: #E4181D
     }
-   button.active {
-    box-shadow: inset 0px 5px 5px rgba(0,0,0,.15); 
-    background-color: #E4181D;  
-    color: rgb(255, 255, 255);
-    };
-  
+    button.erros:hover{
+      color: white;
+      background-color: #E4181D;
+      
+    }
+    button.configurar:hover{
+      color: white;
+      background-color: #E4181D;
 
-    h5.horas{
-        margin-left: 1rem;
-        color: #E4181D;
+    }
+    .modal-header{
+      padding-left: 2rem;
+      background-color: #E4181D;
+      color: white;
+    }
+    .modal-header.button{
+       color: white;
+    }
+    
+    .erro{
+      width: 610px;
+      margin-left: 1rem;
+      background-color: rgb(248, 248, 248);
+      border-radius: 15px;
+      margin-bottom: 5px;
+    }
+    .codigo{
+      text-align: center;
+      font-weight: bold;
+      display: block;
+      margin-left: 0.5rem; 
+      background-color: #5a5b68;
+      color: white;
+      border-radius: 15px;
+      margin-bottom: 5px;
+    }
+    .cab{
+      background-color: #5a5b68;
+      margin-left: 0.6rem;
+      display: flex;
+      justify-content: center;
+      margin-top: 0;
+      padding-right: 1rem;
+      border-radius: 15px;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .linha{
+      margin-top: 1rem;
+      padding-left: 1rem;
+      text-align:left;
+      color: gray;     
+    }
+    
+
+    .guardar{
+      margin-top: 2.5rem;
     }

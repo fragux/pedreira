@@ -6,7 +6,6 @@
 }
 
 .ReactChart{ 
-    display: flex;
-    flex-wrap: wrap;
-    overflow: visible;
+    margin: 0;
+    padding:0;
 }

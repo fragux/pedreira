@@ -70,6 +70,7 @@ class Dashboard extends Component {
     
 
     render() {
+      
       const selectedMaquina = this.props.selectedMaquina;
       const maquinaValues = this.renderSwitch(selectedMaquina);
       const values = maquinaValues.maquina.map(
