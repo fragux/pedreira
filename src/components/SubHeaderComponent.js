@@ -57,14 +57,15 @@ class SubHeader extends Component {
 
     getTimePeriod(current_mode){
         console.log('Estado actual: ', current_mode);
-        this.handleSelect(1, this.currentMode)
+        //this.handleSelect(1, this.currentMode);
+        this.setState({currentMode: current_mode});
         switch(current_mode){
             case 'dia': 
-                return (<div>dia</div>);
+                return (this.setState({current_mode:current_mode}));
             case 'semana': 
-                return (<div>semana</div>);
+                return (this.setState({current_mode:current_mode}));
             case 'mes': 
-                return (<div>mes</div>);
+                return (this.setState({current_mode:current_mode}));
             default: return;
             
         }
@@ -72,14 +73,20 @@ class SubHeader extends Component {
 
     handleSelect(key, timePeriod){
         console.log('Periodo selecionado:', timePeriod);
-        //this.getTimePeriod(timePeriod);
+        this.getTimePeriod(timePeriod);
         this.currentMode=timePeriod;
-        this.setState({isClicked:true});
+        this.setState({
+            isClicked:true,
+            currentMode:timePeriod
+        });
         //props.parentCallback(this.state.timeTotal)
+        this.props.timePeriod(this.currentMode);
+        
     }
     
     
     render() {
+        //console.log(this.currentMode);
         return (
           <div className="container-subheader">
             <div className="row-header">
@@ -90,7 +97,7 @@ class SubHeader extends Component {
 
                 </div>
                 <div className="time">
-                    Tempo Funcionamento: <h5 className="horas"> {this.props.timeTotal}</h5>
+                    Tempo Funcionamento: <h5 className="horas"> {this.state.timeTotal}</h5>
                 </div>
                 <div className="buttons" eventkey={this.state.key}>
                   <button eventkey={1} onClick={this.toggleModal} className="erros">Erros</button>

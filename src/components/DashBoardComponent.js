@@ -15,6 +15,8 @@ import Menu from './SelectComponent';*/
 import MyChart from './ChartComponent';
 //import { Chart } from 'react-charts/dist/react-charts.development';
 import './DashBoardComponent.css'
+import axios from 'axios';
+import { render } from '@testing-library/react';
 
 
 
@@ -27,15 +29,45 @@ class Dashboard extends Component {
             isClicked: false,
             currentItem: "",
             key: 1,
-            timeTotal: ""
+            machine: [],
+            timeTotal: "",
+            timePeriod:this.props.currentMode,
+            corrente:"",
+            velocidade:""
+           
         }
-        //this.renderSwitch.bind(this.props.selectedMaquina)      
-        console.log("Menu maquina: " + this.state.selectedMaquina);       
-          
+        this.renderSwitch = this.renderSwitch.bind(this);
+        this.handleSelectItem = this.handleSelectItem.bind(this);
+        this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
+        this.randomFunction = this.randomFunction.bind(this);
+        this.props.parentCallback(this.state.timeTotal);
+        this.handleResponse = this.handleResponse.bind(this);
+        
     }
+    componentDidMount() {
+        this.setState({
+            machine: this.machine,
+            timeTotal: this.state.timeTotal
+            
+        })
+        setInterval(() => {
+            this.setState(prevState => {
+              return {
+                corrente: this.randomFunctionCorrente(),
+                velocidade: this.randomFunction()
+              };
+            });
+          }, 2500);
+       
+    }
+    
 
+
+    
     handleResponse = (parentData) =>{
-        //this.setState(parentData)
+        this.props.parentCallback(this.state.timeTotal);
+        console.log("Tempo total callback", this.state.timeTotal);     
+        this.setState(parentData)
         console.log("Dashboard: "+ parentData)
         console.log(this.renderSwitch(parentData))
         const maquinaValues = this.renderSwitch(parentData);
@@ -43,8 +75,9 @@ class Dashboard extends Component {
       }
 
       renderSwitch(param) {
+          
         switch(param) {
-          case 'MONOFIO NFC 2000':
+          case 'MONOFIO NFC 2000': 
             return (
               this.state={maquina:MACHINE}
               );
@@ -60,35 +93,148 @@ class Dashboard extends Component {
       }
 
       handleSelectItem(key, dashboardItem){
+        
+         
         console.log('Dashboard button:', dashboardItem);
+        console.log('Maquina selecionada----> ', this.props.selectedMaquina);
         //this.getTimePeriod(timePeriod);
-        this.currentItem=dashboardItem;
+        this.currentItem = dashboardItem;
         this.setState({isClicked:true});
-        //props.parentCallback(this.state.timeTotal)
+        switch(this.props.selectedMaquina){
+            case ('MONOFIO NFC 2000'): switch(this.props.currentMode){
+                case "dia":
+                    axios.get("http://localhost:3001/monofio/dia")
+                    .then((response) => {
+                        console.log("Get do item selecionado: ", response.data);
+                                          this.setState ( {machine : response.data});
+                                          console.log("Atribuição do GET ao estado. ", this.props.selectedMaquina, this.currentItem)
+                                        }
+                                        )
+                    break;
+                    case "mes":
+                        axios.get("http://localhost:3001/monofio/mes")
+                    .then((response) => {
+                        console.log("Get do item selecionado: ", response.data);
+                                          this.setState ( {machine : response.data});
+                                          console.log("Atribuição do GET ao estado. ", this.props.selectedMaquina, this.currentItem)
+                                        }
+                                        )
+                    break;
+                        case "semana": axios.get("http://localhost:3001/monofio/semana")
+                        .then((response) => {
+                            console.log("Get do item selecionado: ", response.data);
+                                              this.setState ( {machine : response.data});
+                                              console.log("Atribuição do GET ao estado. ", this.props.selectedMaquina, this.currentItem)
+                                            }
+                                            )
+                        break;
+                            default: return
+
+            }
+           break;
+            case 'LOUSADA 2000': 
+                return (
+                    axios.get("http://localhost:3001/lousada2020/last")
+                    .then((response) => {
+                        console.log("Get do item selecionado: ", response.data);
+                                          this.setState ( {machine : response.data});
+                                          console.log("Atribuição do GET ao estado. ", this.props.selectedMaquina, this.currentItem)
+                                        }
+                                        )
+                );
+                case 'MINORCA': 
+                return (
+                    axios.get("http://localhost:3001/minorca/last")
+                    .then((response) => {
+                        console.log("Get do item selecionado: ", response.data);
+                                          this.setState ( {machine : response.data});
+                                          console.log("Atribuição do GET ao estado. ", this.props.selectedMaquina, this.currentItem)
+                                        }
+                                        )
+                );
+                case 'SERRA 3500': 
+                return (
+                    axios.get("http://localhost:3001/serra3500/last")
+                    .then((response) => {
+                        console.log("Get do item selecionado: ", response.data);
+                                          this.setState ( {machine : response.data});
+                                          console.log("Atribuição do GET ao estado. ", this.props.selectedMaquina, this.currentItem)
+                                        }
+                                        )
+                );
+                
+            default:
+              return 
+          }
+          
+    }
+    handleSelectedMaquina(param){
+        switch(param){
+            case "MONOFIO NFC 2000": return (
+                axios.get("http://localhost:3001/monofio/last")
+                .then((response) => {
+                    console.log("Get do item selecionado: ", response.data);
+                                      this.setState ( {machine : response.data});
+                                      console.log("Atribuição do GET ao estado. ", this.currentItem)
+                                    }
+                                    )
+            );
+            default:
+                break;                    
+
+        }        
+    }
+    handleTempo(maquina, tempo){
+        switch(tempo){
+            case "dia":
+                break;
+                case "mes":
+                    break;
+                    case "semana":
+                        default: return
+        }
     }
 
-    
+    randomFunction= () =>{
+        var min = 1900;
+        var max = 2200;
+        let rand =  min + (Math.random() * (min-max));
+        return(Math.round(rand))
+    };
+
+    randomFunctionCorrente= () =>{
+        var min = 15;
+        var max = 20;
+        let rand =  min + (Math.random() * (min-max));
+        return(Math.round(rand))
+    };
 
     render() {
-      
-      const selectedMaquina = this.props.selectedMaquina;
-      const maquinaValues = this.renderSwitch(selectedMaquina);
-      const values = maquinaValues.maquina.map(
-        ({ id, type, TotalHours, Hours, WaterConsumption, WireSpeed, LubrificationTimeTotal, EletricConsumption, Production }) => 
-         `Id da maquina: ${id}
-         Tipo: ${type}
-         Total horas: ${this.state.timeTotal = TotalHours.value}
-         Horas: ${Hours.value}
-         Peças Produzidas: ${Production.value}
-         Consumo de Água: ${WaterConsumption.value}
-         Consumo Elétrico:${EletricConsumption.value}
-         Velocidade do Fio:${WireSpeed.value}
-         Tempo Lubrificação:${LubrificationTimeTotal.value}
-         `)
-
-      console.log(values);
-      console.log("Valor tempo: "+ this.state.timeTotal);
-      this.props.parentCallback(this.state.timeTotal);
+       
+        const machine = this.state.machine;
+        console.log("Período selecionado passado para dashboard: " + this.props.currentMode); 
+        //console.log("Array a ser passado da query para const machine: ", machine);
+        //console.log("Item Selecionado: ", this.state.currentItem);
+        const selectedMaquina = this.props.selectedMaquina;
+       // console.log("Máquina selecionada: ", this.props.selectedMaquina )
+        //this.handleSelectedMaquina(this.props.selectedMaquina);
+        const maquinaValues = this.renderSwitch(selectedMaquina);
+        const values = maquinaValues.maquina.map(
+            ({ id, type, TotalHours, Hours, WaterConsumption, WireSpeed, LubrificationTimeTotal, EletricConsumption, Production }) => 
+            `Id da maquina: ${id}
+            Tipo: ${type}
+            Total horas: ${this.state.timeTotal = TotalHours.value}
+            Horas: ${Hours.value}
+            Peças Produzidas: ${Production.value}
+            Consumo de Água: ${WaterConsumption.value}
+            Consumo Elétrico:${EletricConsumption.value}
+            Velocidade do Fio:${WireSpeed.value}
+            Tempo Lubrificação:${LubrificationTimeTotal.value}
+            `)
+            
+            console.log(values);
+            console.log("Valor tempo: ", this.state.timeTotal);
+            
       //console.log(maquinaValues[0]);
        // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
         return (          
@@ -111,7 +257,7 @@ class Dashboard extends Component {
                            </Card>
                            <Card eventkey={2} onClick={() => this.handleSelectItem(2, 'corrente')} className={'card-box-header' + (this.currentItem === 'corrente' ? " active" : "")}>
                                <h6>Consumo Elétrico</h6>
-                               <h1 style={{ color: "#333" }}>{EletricConsumption.value}</h1>
+                               <h1 style={{ color: "#333" }}>{this.randomFunctionCorrente()}</h1>
                                <h6>Amperes</h6>
                            </Card>
                            <Card eventkey={3} onClick={() => this.handleSelectItem(3, 'horas')} className={'card-box-header' + (this.currentItem === 'horas' ? " active" : "")}>
@@ -126,7 +272,7 @@ class Dashboard extends Component {
                            </Card>
                            <Card eventkey={5} onClick={() => this.handleSelectItem(5, 'velocidade')} className={'card-box-header' + (this.currentItem === 'velocidade' ? " active" : "")}>
                                <h6>Velocidade FIO</h6>
-                               <h1 style={{ color: "#333" }}>{WireSpeed.value}</h1>
+                               <h1 style={{ color: "#333" }}>{this.randomFunction()}</h1>
                                <h6>RPM</h6>
                            </Card>
                            <Card eventkey={6} onClick={() => this.handleSelectItem(6, 'lubri')} className={'card-box-header' + (this.currentItem === 'lubri' ? " active" : "")}>
@@ -138,13 +284,13 @@ class Dashboard extends Component {
 
                        </div>
                    </div>
-                   <div className="container col-12">
+                  
                            
 
-                               <MyChart maquina = {maquinaValues} />
+                               <MyChart maquina = {maquinaValues} machine = {machine} currentItemChart = {this.currentItem}/>
 
                            
-                       </div></>
+                       </>
                     
                                
 

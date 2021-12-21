@@ -47,7 +47,7 @@ const DropdownMaquina = (props) => {
           <DropdownItem className="dropdownitem" onClick={handleChange} value="LOUSADA 2000">LOUSADA 2000</DropdownItem>
           <DropdownItem className="dropdownitem" onClick={handleChange} value="MINORCA">MINORÇA</DropdownItem>
           <DropdownItem className="dropdownitem" onClick={handleChange} value="SERRA 3500">SERRA 3500</DropdownItem>
-          <DropdownItem className="dropdownitem" onClick={handleChange} value="4">Maquina 5</DropdownItem>
+          <DropdownItem className="dropdownitem" onClick={handleChange} value="teste">Maquina para Teste SQL</DropdownItem>
         </DropdownMenu>
       </Dropdown>
       
