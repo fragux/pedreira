@@ -17,12 +17,17 @@ import MyChart from './ChartComponent';
 import './DashBoardComponent.css'
 import axios from 'axios';
 import { render } from '@testing-library/react';
+import { alignAuto } from 'react-charts/dist/react-charts.development';
+//const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
+
 
 
 
 class Dashboard extends Component {
     constructor(props) {
         super(props);
+        this.counterVelocidade= 0;
+        
         this.state = {            
             selectedMaquina: this.props.selectedMaquina,
             maquinaValues: MACHINE,
@@ -33,7 +38,11 @@ class Dashboard extends Component {
             timeTotal: "",
             timePeriod:this.props.currentMode,
             corrente:"",
-            velocidade:""
+            velocidade:"",
+            realTime: this.props.realTime,
+            statusCorrente: false,
+            statusVelocidade:false,
+            
            
         }
         this.renderSwitch = this.renderSwitch.bind(this);
@@ -41,16 +50,20 @@ class Dashboard extends Component {
         this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
         this.randomFunction = this.randomFunction.bind(this);
         this.props.parentCallback(this.state.timeTotal);
-        this.handleResponse = this.handleResponse.bind(this);
-        
+        this.handleResponse = this.handleResponse.bind(this);    
+        console.log("Botão real time: ---->", this.props.realTime)
     }
+
     componentDidMount() {
         this.setState({
             machine: this.machine,
-            timeTotal: this.state.timeTotal
+            timeTotal: this.state.timeTotal,
+            realTime: this.props.realTime           
             
         })
+       
         setInterval(() => {
+            if(this.props.realTime)
             this.setState(prevState => {
               return {
                 corrente: this.randomFunctionCorrente(),
@@ -199,6 +212,33 @@ class Dashboard extends Component {
         var min = 1900;
         var max = 2200;
         let rand =  min + (Math.random() * (min-max));
+        if (rand>1850) {
+            this.state.statusVelocidade = true;
+            this.counterVelocidade++;
+            
+        }
+        if(this.props.realTime)
+        if(this.counterVelocidade >10){
+            this.counterVelocidade=0;
+            alert(`Velocidade em rotação crítica!!!!\nVelocidade: ${Math.round(rand)}RPM\nMensagem enviada para o telemóvel`); 
+            //função para enviar notificação via Whatsapp
+            //const message = `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`;
+            const date = new Date();
+         axios.post('http://localhost:3001/sendnotification', {
+            
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                
+                data: 'WARNING!!!\n' + `${date}` + '\nA máquina: ' +  `${this.props.selectedMaquina}` +' está com rotação elevada: ' + `${Math.round(rand)}` +'\nVerifique a máquina!!!'
+              })
+           /* client.messages.create({
+                from: 'whatsapp:+315937012912',
+                to: 'whatsapp:+351937012912',
+                body: `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`
+            }).then(message => console.log(message.sid));*/
+           
+            
+        }
         return(Math.round(rand))
     };
 
@@ -206,13 +246,22 @@ class Dashboard extends Component {
         var min = 15;
         var max = 20;
         let rand =  min + (Math.random() * (min-max));
+        if (rand>13) {
+            this.state.statusCorrente = true;
+            
+        }
+        
         return(Math.round(rand))
     };
 
+    handleTime=(e)=>{
+
+    }
+
     render() {
-       
         const machine = this.state.machine;
-        console.log("Período selecionado passado para dashboard: " + this.props.currentMode); 
+        if(this.props.realTime) ;
+        console.log("Período selecionado passado para dashboard: " + this.props.realTime); 
         //console.log("Array a ser passado da query para const machine: ", machine);
         //console.log("Item Selecionado: ", this.state.currentItem);
         const selectedMaquina = this.props.selectedMaquina;
@@ -249,16 +298,19 @@ class Dashboard extends Component {
                                <h6></h6>
                                <h2 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}>{id}</h2>
                                <h6></h6>
+                               
                            </Card>
-                           <Card eventkey={1} onClick={() => this.handleSelectItem(1, 'pecas')} className={'card-box-header' + (this.currentItem === 'pecas' ? " active" : "")}>
+                           <Card eventkey={1} onClick={() => this.handleSelectItem(1, 'pecas')} className={'card-box-header' + (this.currentItem === 'pecas' ? " active" : " ")}>
                                <h6>Peças Produzidas</h6>
                                <h1 style={{ color: "#333" }}>{Production.value}</h1>
-                               <h6>UNI</h6>
+                               <h6>UNI </h6>
+                               
                            </Card>
-                           <Card eventkey={2} onClick={() => this.handleSelectItem(2, 'corrente')} className={'card-box-header' + (this.currentItem === 'corrente' ? " active" : "")}>
-                               <h6>Consumo Elétrico</h6>
-                               <h1 style={{ color: "#333" }}>{this.randomFunctionCorrente()}</h1>
+                           <Card eventkey={2} onClick={() => this.handleSelectItem(2, 'corrente')} className={'card-box-header' + (this.currentItem === 'corrente' ? " active" : " ")}>
+                               <h6>Consumo Elétrico </h6>
+                               <h1 style={{ color: "#333" }}>{this.randomFunctionCorrente()} </h1>
                                <h6>Amperes</h6>
+                               <span className={"spanc" + ( this.state.statusCorrente === true ? " active" : " down")}></span>
                            </Card>
                            <Card eventkey={3} onClick={() => this.handleSelectItem(3, 'horas')} className={'card-box-header' + (this.currentItem === 'horas' ? " active" : "")}>
                                <h6>Funcionamento</h6>
@@ -270,10 +322,11 @@ class Dashboard extends Component {
                                <h1 style={{ color: "#333" }}>{WaterConsumption.value}</h1>
                                <h6>Litros</h6>
                            </Card>
-                           <Card eventkey={5} onClick={() => this.handleSelectItem(5, 'velocidade')} className={'card-box-header' + (this.currentItem === 'velocidade' ? " active" : "")}>
+                           <Card eventkey={5} onClick={() => this.handleSelectItem(5, 'velocidade')} className={'card-box-header' + (this.currentItem === 'velocidade' ? " active" : " ")}>
                                <h6>Velocidade FIO</h6>
                                <h1 style={{ color: "#333" }}>{this.randomFunction()}</h1>
                                <h6>RPM</h6>
+                               <span className={"spanc" + ( this.state.statusVelocidade === true ? " active" : " down")}></span>
                            </Card>
                            <Card eventkey={6} onClick={() => this.handleSelectItem(6, 'lubri')} className={'card-box-header' + (this.currentItem === 'lubri' ? " active" : "")}>
                                <h6>Lubrificação</h6>
@@ -286,7 +339,7 @@ class Dashboard extends Component {
                    </div>
                   
                            
-
+                               
                                <MyChart maquina = {maquinaValues} machine = {machine} currentItemChart = {this.currentItem}/>
 
                            

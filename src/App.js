@@ -25,19 +25,20 @@ class App extends Component {
         machine : [],
         chartData : [],
         timeTotal: "",
-        timePeriod: ""
+        timePeriod: "",
+        realTime: false
     }
     //this.renderMaquina = this.renderMaquina.bind(this);
     this.handleTimeback = this.handleTimeback.bind(this);
     this.handleTimePeriod = this.handleTimePeriod.bind(this);
     this.handleCallback = this.handleCallback.bind(this);
+    this.handleRealTime = this.handleRealTime.bind(this);
 }
 
 handleCallback = (parentData) =>{
   this.setState({parentData})
   this.state.machine = parentData;
   console.log("Avô: ", parentData);
-  
   //console.log(this.renderSwitch(parentData))
 }
 
@@ -53,6 +54,12 @@ handleTimeback = (parentData) =>{
   //console.log(this.renderSwitch(parentData))
 }
 
+handleRealTime = (childData) =>{
+  this.state.realTime = childData;
+  this.setState({realtime: this.state.realTime});
+  console.log("Real Time selecionado? ---->: ", this.state.realTime);
+  return;
+}
 
 handleTimePeriod = (parentData) =>{
   this.state.timePeriod = parentData;
@@ -103,22 +110,22 @@ renderTimeTotal(parentData){
 componentDidMount() {  
       this.setState({
         timePeriod: this.state.timePeriod,
+        realTime:this.state.realTime
       });
       return;    
 }
 
 render(){
-  //const machine = this.renderMaquina(this.parentData);
-  //this.renderTimeTotal()
-  console.log("Time período em Appjs", this.state.timePeriod);
+  this.state.realTime = this.state.realTime;
+  console.log("Time período em Appjs", this.state.realTime);
   
       return (
       <div className="App">
         <header className="App-header">
-          <SubHeader  timeTotal = {this.state.timeTotal} timePeriod = {this.handleTimePeriod}/>
+          <SubHeader  timeTotal = {this.state.timeTotal} timePeriod = {this.handleTimePeriod} realTime = {this.handleRealTime}/>
           <Header bigParentCallback = {this.handleCallback}  />          
         </header>
-          <Dashboard selectedMaquina = {this.state.machine} parentCallback = {this.handleTimeback} currentMode = {this.state.timePeriod} />
+          <Dashboard realTime={this.state.realTime} selectedMaquina = {this.state.machine} parentCallback = {this.handleTimeback} currentMode = {this.state.timePeriod}  />
         
          
          

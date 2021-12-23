@@ -9,6 +9,11 @@
     margin: 0;
     padding:0;
    
+}.chart-buttons{
+    display:flex;
+    flex-direction: row;
+    justify-content:space-between;
+    border: 1px solid red;
 }
 
 .toggle{
@@ -89,3 +94,4 @@ input[type="checkbox"]:before{
 input:checked[type="checkbox"]:before{
     left: 40px;
 }
+

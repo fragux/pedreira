@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
+const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
 
 const db = mysql.createPool({
     host: 'orion.morecolab.pt',
@@ -15,6 +16,24 @@ const db = mysql.createPool({
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended : true}));
+
+
+   
+
+
+app.post('/sendnotification', (req, res) => {
+    const data = req.body.data;
+    console.log("Mensagem a enviar: ", data);
+    client.messages 
+    .create({ 
+       body: data,  
+       messagingServiceSid: 'MGb2518061199ca35940162d5cc523d424',      
+       to: '+351937012912' 
+     }) 
+    .then(message => console.log(message.sid)) 
+    .done();
+    res.json('Mensagem enviada!');
+});
 
 
 app.get('/minorca', (req, res) =>{

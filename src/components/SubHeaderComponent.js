@@ -29,7 +29,8 @@ class SubHeader extends Component {
             timeTotal: this.props.timeTotal,
             currentMode: 'dia',
             isModalOpen: false,
-            isModalConfigOpen: false        
+            isModalConfigOpen: false ,
+            currentTime: false       
             
         };  
         //this.currentMode ='dia';
@@ -38,6 +39,7 @@ class SubHeader extends Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.toggleModalConfig = this.toggleModalConfig.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSelectTime = this.handleSelectTime.bind(this);
         
     }
     handleSubmit(values) {
@@ -83,6 +85,14 @@ class SubHeader extends Component {
         this.props.timePeriod(this.currentMode);
         
     }
+
+    handleSelectTime(){
+        this.setState((state) => ({
+            currentTime: !state.currentTime, 
+        }));
+        console.log("SELECTED REAL YES/NO?:  ", !this.state.currentTime)
+        this.props.realTime(!this.state.currentTime);
+    }
     
     
     render() {
@@ -97,7 +107,8 @@ class SubHeader extends Component {
 
                 </div>
                 <div className="time">
-                    Tempo Funcionamento: <h5 className="horas"> {this.state.timeTotal}</h5>
+                   {/* Tempo Funcionamento: <h5 className="horas"> {this.state.timeTotal}</h5>*/}
+                   <button onClick={()=>this.handleSelectTime()} className={'realtime' + ( this.state.currentTime === true ? " active" : "")}>Real Time<span className={'span'+( this.state.currentTime === true ? " active" : "")}></span></button>
                 </div>
                 <div className="buttons" eventkey={this.state.key}>
                   <button eventkey={1} onClick={this.toggleModal} className="erros">Erros</button>
