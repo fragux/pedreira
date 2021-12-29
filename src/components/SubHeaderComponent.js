@@ -8,12 +8,11 @@ import { Button, Form, FormGroup, Label, Input, FormText ,
 } from 'reactstrap';
 import DropdownMaquina from './DropDownMaquina';
 import ListaComponent from './ListaComponent';*/
-import { Navbar, NavbarBrand, Nav, NavbarToggler, Collapse, NavItem, Jumbotron,
+import { 
     Button, Modal, ModalHeader, ModalBody, 
-    Form,
-    FormGroup,
+    Form,    
     Input,
-    Label } from 'reactstrap';
+     } from 'reactstrap';
 import "./SubHeaderComponent.css";
 //import { Control, LocalForm } from 'react-redux-form';
 
@@ -169,32 +168,32 @@ class SubHeader extends Component {
                         <div className="col-xs-12 col-md-7 linha"><h6>Peças produzidas:</h6></div>
                         <div className="col-xs-6 col-md-3 linha"> <Input  type="text" id="peças" name="peças" 
                                     innerRef={(input) => this.peças = input} /></div>
-                        <div className="col-xs-6 col-md-1 linha"> <Input  type="switch" id="peças" name="peças" 
+                        <div className="col-xs-6 col-md-1 linha"> <input  type="checkbox" id="peças" name="peças" 
                                     innerRef={(input) => this.peças = input} />
                         
                         </div> 
                         <div className="col-xs-12 col-md-7 linha"><h6>Consumo Elétrico:</h6></div>
                         <div className="col-xs-6 col-md-3 linha "> <Input  type="text" id="peças" name="peças" 
                                     innerRef={(input) => this.peças = input} /></div>
-                                    <div className="col-xs-6 col-md-1 linha"> <Input  type="switch" id="peças" name="peças" 
+                                    <div className="col-xs-6 col-md-1 linha"> <input  type="checkbox" id="peças" name="peças" 
                                                 innerRef={(input) => this.peças = input} />
                         </div> 
                         <div className="col-xs-12 col-md-7 linha"><h6>Funcionamento:</h6></div>
                         <div className="col-xs-6 col-md-3 linha "> <Input  type="text" id="peças" name="peças" 
                                     innerRef={(input) => this.peças = input} /></div>
-                                    <div className="col-xs-6 col-md-1 linha"> <Input  type="switch" id="peças" name="peças" 
+                                    <div className="col-xs-6 col-md-1 linha"> <input  type="checkbox" id="peças" name="peças" 
                                                 innerRef={(input) => this.peças = input} />
                         </div> 
                         <div className="col-xs-12 col-md-7 linha"><h6>Velocidade do Fio:</h6></div>
                         <div className="col-xs-6 col-md-3 linha "> <Input  type="text" id="peças" name="peças" 
                                     innerRef={(input) => this.peças = input} /></div>
-                                    <div className="col-xs-6 col-md-1 linha"> <Input  type="switch" id="peças" name="peças" 
+                                    <div className="col-xs-6 col-md-1 linha"> <input  type="checkbox" id="peças" name="peças" 
                                                 innerRef={(input) => this.peças = input} />
                         </div> 
                         <div className="col-xs-12 col-md-7 linha"><h6>Lubrificação:</h6></div>
                         <div className="col-xs-6 col-md-3 linha "> <Input  type="text" id="peças" name="peças" 
                                     innerRef={(input) => this.peças = input} /></div>
-                                    <div className="col-xs-6 col-md-1 linha"> <Input  type="switch" id="peças" name="peças" 
+                                    <div className="col-xs-6 col-md-1 linha"> <input  type="checkbox" className="param" id="peças" name="peças" 
                                                 innerRef={(input) => this.peças = input} />
                         </div> 
                         

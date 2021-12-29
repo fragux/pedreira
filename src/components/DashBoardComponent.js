@@ -16,8 +16,8 @@ import MyChart from './ChartComponent';
 //import { Chart } from 'react-charts/dist/react-charts.development';
 import './DashBoardComponent.css'
 import axios from 'axios';
-import { render } from '@testing-library/react';
-import { alignAuto } from 'react-charts/dist/react-charts.development';
+//import { render } from '@testing-library/react';
+//import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
 
 
@@ -218,7 +218,7 @@ class Dashboard extends Component {
             
         }
         if(this.props.realTime)
-        if(this.counterVelocidade >10){
+        if(this.counterVelocidade >10 && this.state.realTime){
             this.counterVelocidade=0;
             alert(`Velocidade em rotação crítica!!!!\nVelocidade: ${Math.round(rand)}RPM\nMensagem enviada para o telemóvel`); 
             //função para enviar notificação via Whatsapp
@@ -247,7 +247,7 @@ class Dashboard extends Component {
         var max = 20;
         let rand =  min + (Math.random() * (min-max));
         if (rand>13) {
-            this.state.statusCorrente = true;
+            this.setState({statusCorrente : true});
             
         }
         
@@ -295,9 +295,9 @@ class Dashboard extends Component {
             <><div className="container-dashboard col-12">
                        <div className="row-dashboard"eventkey={this.state.key}>
                            <Card className="card-box-header" style={{ backgroundColor: "#E4181D", color: "#ffffff" }} onClick={() => this.handleSelectItem(1, 'none')}>
-                               <h6></h6>
+                               
                                <h2 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}>{id}</h2>
-                               <h6></h6>
+                              
                                
                            </Card>
                            <Card eventkey={1} onClick={() => this.handleSelectItem(1, 'pecas')} className={'card-box-header' + (this.currentItem === 'pecas' ? " active" : " ")}>

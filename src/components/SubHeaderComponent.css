@@ -1,7 +1,7 @@
 .container-subheader {
-    margin-top: -1.5rem;
+    margin-top: -1.2rem;
     background-color: #bbbaba;
-    min-height: 20vh;
+    min-height: 17vh;
     display: flex;
     flex-direction: column;
     text-align: right;
@@ -9,10 +9,9 @@
     font-size: calc(4px + 2vmin);
     color: white;
     border-radius: 0px 0px 0px 50px;
-    padding-top: rem;
     box-shadow: inset 0px 5px 5px rgba(0,0,0,.15); 
     box-shadow: 0px 10px 10px rgba(0,0,0,.15);
-    margin-bottom: 15px;
+    margin-bottom: 35px;
   }
 
   .row-subheader{
@@ -30,7 +29,7 @@
   .buttons{
     position: relative;
       font-size: medium;
-      margin-top: 8rem;
+      margin-top: 6rem;
       height: 2.5rem;
       border-radius: 15px;
       display: inline-flex;
@@ -162,7 +161,7 @@
     }
     .time{
       font-size: medium;
-      margin-top: 7.5rem;    
+      margin-top: 6rem;    
       border-radius: 15px;
       display: flex;
       padding-bottom: 0.0rem ;
@@ -171,7 +170,7 @@
 
      button.realtime{
       justify-content: center;
-      margin-top: 0.5rem;
+      margin-top: 0rem;
           
          width: 7rem;      
         border: 1px solid white;
@@ -229,3 +228,7 @@
         background-color: #cfcfcf;  
         color: rgb(102, 102, 102);
       };
+
+      input:checked[type="checkbox"]{
+        background-color:red;
+      } 

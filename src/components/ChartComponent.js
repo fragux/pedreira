@@ -13,13 +13,13 @@ maquina=[{
 }]
 
 const [active, setActive] = useState('Linhas');
-const [maquinaChart, setMaquinaChart] = useState(machine);
+//const [maquinaChart, setMaquinaChart] = useState(machine);
 console.log("Botão toggle: ", active);
 
-const [chartLabel, setChartLabel] = useState([]);
-  var min = 100;
-   var max = 2200;
-   let rand =  min + (Math.random() * (max-min));
+//const [chartLabel, setChartLabel] = useState([]);
+  //var min = 100;
+  // var max = 2200;
+   //let rand =  min + (Math.random() * (max-min));
    let x=1;
    if(machine && currentItemChart==="pecas"){
      maquina = machine.map(({ n_pecas}) => {
@@ -139,8 +139,8 @@ const [chartLabel, setChartLabel] = useState([]);
         height: '430px',
         position: 'relative',
         overflow: 'visible',
-        "padding-bottom": "2rem",
-        "margin-left": "-1rem"
+        "paddingBottom": "2rem",
+        "marginLeft": "-2rem"
 
     }),
     [useEffect])
@@ -156,7 +156,7 @@ const [chartLabel, setChartLabel] = useState([]);
 
     const getDatumStyle = React.useCallback(
       () => {
-        if(active==line)
+        if(active===line)
         return({
 
         transition: 'all .5s ease',
@@ -179,9 +179,9 @@ const [chartLabel, setChartLabel] = useState([]);
         else setActive(bar)
       };
 
-      function handleTime(e){
+     /* function handleTime(e){
         const checked = e.target.checked;
-      }
+      }*/
 
 
 
