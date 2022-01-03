@@ -2,24 +2,35 @@ import React, {useEffect, useState} from 'react'
 import { Chart } from 'react-charts'
 import './ChartComponent.css'
 
-export default function MyChart({maquina,machine, currentItemChart}) {
+export default function MyChart({maquina, machine, currentItemChart}) {
 console.log("Gráfico para teste: ", machine);
 console.log("Item selecionado no CHART: ", currentItemChart);
-maquina=[{
-  x: 0,
-  y:0,
-  label: "NONE"
-
-}]
+const maquinaGrafico = [];
 
 const [active='Linhas', setActive] = useState();
 //const [maquinaChart, setMaquinaChart] = useState(machine);
-console.log("Botão toggle: ", active);
+//console.log("Botão toggle: ", active);
 
 //const [chartLabel, setChartLabel] = useState([]);
   //var min = 100;
   // var max = 2200;
    //let rand =  min + (Math.random() * (max-min));
+   function grafico(){
+       for (let x=0 ; x<20 ; x++){
+   var min = 100;
+    var max = 150;
+     let rand =  min + (Math.random() * (max-min));
+     maquinaGrafico[x] ={
+
+         x:x,
+     y:Math.round(rand),
+     label: "Peças Produzidas"
+     }
+
+     
+   }}
+   grafico();
+
    let x=1;
    if(machine && currentItemChart==="pecas"){
      maquina = machine.map(({ n_pecas}) => {
@@ -81,12 +92,22 @@ console.log("Botão toggle: ", active);
 
   console.log("Dados da máquina a serem passados para os eixos X e Y: ", maquina);
 
+  if(true){
+    maquina = maquinaGrafico.map(({ x,y}) => {
+      return{
+       x:x,
+       y:y,
+       label: "Peças Produzidas"
+     }
 
+    })
+
+   }
    const data = React.useMemo(
       () => [
         {
-          label: maquina[0].label,
-          data: maquina,
+          label: "Peças",
+          data: maquina ,
 
         },
         /*{
@@ -105,16 +126,11 @@ console.log("Botão toggle: ", active);
 
     const axes = React.useMemo(
       () => {
-        if(active==="Linhas")return[
+       return([
 
         { primary: true, type: 'linear', position: 'bottom' },
         { type: 'linear', position: 'left', stacked: false }
-      ]
-    else return[
-      { primary: true, type: 'ordinal', position: 'bottom' },
-      { type: 'linear', position: 'left', stacked: true }
-
-    ]},
+      ])},
       [maquina, useEffect]
     )
 
@@ -135,12 +151,10 @@ console.log("Botão toggle: ", active);
 
     const style = React.useMemo(()=>({
 
-        width: '100%',
-        height: '430px',
+        width: '100px',
+        height: '50px',
         position: 'relative',
         overflow: 'visible',
-        "paddingBottom": "2rem",
-        "marginLeft": "-2rem"
 
     }),
     [useEffect])
@@ -149,7 +163,7 @@ console.log("Botão toggle: ", active);
     const getSeriesStyle = React.useCallback(
       () => ({
         transition: 'all .5s ease',
-        color:'gray'
+        color:'red'
       }),
       [maquina, useState([])]
     )
@@ -187,14 +201,9 @@ console.log("Botão toggle: ", active);
 
 
     return (
-      <div className="container col-12 col-md-12 chart">
-      <div className="toggle ">
-
-            <button className={"toggle barras" + (active === bar ? " active" : "")}>Barras</button>
-            <input type="checkbox" name="toggleChartType" active={active === 'Linhas' } onChange={handleCheckbox} ></input>
-            <button className={"toggle linhas" + (active === line ? " active" : "")}>Linhas</button>
-                </div>
                
+
+<div id="parametrosChart">
 
 
         <Chart
@@ -205,8 +214,8 @@ console.log("Botão toggle: ", active);
           axes={axes}
           series={active}
           style={style}   />
-
-      </div>
+</div>
+      
     )
   }
 

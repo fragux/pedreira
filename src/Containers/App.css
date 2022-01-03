@@ -12,5 +12,6 @@ body {
 .login{
     border-radius: 15%;
     border-color: none;
+    margin-left: 1rem;
 }
 

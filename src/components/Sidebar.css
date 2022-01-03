@@ -1,0 +1,151 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes slideInFromLeft {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+.sidebar{
+    height: 100%;
+    width: 250px;
+    background: #bbbaba;
+    color: gray;
+   
+  
+ 
+       
+}
+
+.logo-before{
+    height: 10vh;
+    background: #E4181D;
+   
+}
+
+.logo{
+    padding: 50px;
+    height: 10vh;
+    background: #bbbaba;
+    border-radius: 0px 25px 25px 0px;
+    margin-top: -4.5rem;
+    z-index: 2;
+    margin-bottom: 5rem;
+    
+   
+
+}
+.sidebar-menu{
+    border-radius: 0px 50px 0px 0;
+    background: #ffffff;
+    height: 100%;
+    margin-top: -6.5rem;
+    padding-top: 4rem;
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,.15);
+    box-shadow: inset 0px 0px 15px rgba(0,0,0,.15); 
+    
+
+}
+.sidebarList{  
+    
+    margin: 0;
+    padding: 0;
+    padding-top: 4rem;  
+    height: auto;
+    width: 100%;
+    z-index: 3;
+    animation: 0.5s ease-out 0s 1 slideInFromLeft;
+    
+    
+   
+}
+
+.sidebarList .row{
+    border-top: 1px solid rgb(221, 221, 221);
+    margin: 0;
+    width: 100%;
+    height: 50px;    
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: all .2s ease;
+}
+
+.sidebarList .row.active{
+    background: #e7e6e6;
+    color: #E4181D;
+   
+    
+    border-left: 8px solid #E4181D;
+}
+
+
+.sidebarList .row:hover{
+    background: #ffffff;
+    
+    border-left: 8px solid #E4181D;
+    color: #E4181D;
+    cursor: pointer;
+    box-shadow: inset 0px 5px 5px rgba(0,0,0,.25); 
+    box-shadow: 0px 5px 5px rgba(0,0,0,.15);
+}
+
+.row #icon{
+    flex: 25%;
+    display: grid;
+    place-items: center;
+    justify-content: right;
+    color: black;
+}
+.row.active #icon{
+       color: #E4181D;
+}
+
+.row #title{
+    flex: 75%;
+    text-align: left;
+   
+}
+
+.sidebarList-exit{
+    border-top: 1px solid rgb(221, 221, 221);
+    list-style-type: none;
+    display: flex;
+    margin-top: 0rem;;
+    padding-top: 4.5rem;  
+    text-align: center;
+    place-items: center;
+    justify-content: center;
+    
+}
+
+
+.exit{
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50px 50px;
+    color: white;
+    justify-content: space-around;
+    place-items: center;
+    margin-left: -2rem;
+    box-shadow: 0px 5px 5px rgba(0,0,0,.15);
+    background: #E4181D;
+}
+
+.exit:hover{
+    background: #bbbaba;
+    cursor: pointer;
+    box-shadow: inset 0px 5px 5px rgba(0,0,0,.25); 
+    color: #E4181D ;
+
+}

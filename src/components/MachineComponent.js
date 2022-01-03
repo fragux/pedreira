@@ -3,7 +3,9 @@ import Header from './HeaderComponent';
 import SubHeader from './SubHeaderComponent';
 import React, { Component } from 'react';
 import Dashboard from './DashBoardComponent';
+import DashboardGeral from './DashBoardGeral';
 import './DashBoardComponent.css'
+import Sidebar from './Sidebar';
 
 class Machine extends Component {
   constructor(props) {
@@ -21,11 +23,12 @@ class Machine extends Component {
     this.handleTimePeriod = this.handleTimePeriod.bind(this);
     this.handleCallback = this.handleCallback.bind(this);
     this.handleRealTime = this.handleRealTime.bind(this);
+    this.handdleDashboard = this.handdleDashboard.bind(this);
 }
 
 handleCallback = (parentData) =>{
   this.setState({parentData})
-  this.state.machine = parentData;
+  this.setState({machine : parentData});
   console.log("Avô: ", parentData);
   //console.log(this.renderSwitch(parentData))
 }
@@ -102,19 +105,41 @@ componentDidMount() {
       });
       return;    
 }
+handdleDashboard(value){
+  console.log("HANDLE DASHBOARD", value);
+  switch (value) {
+    case 'MONOFIO NFC 2000' :
+      case 'LOUSADA 2000': return(
+    <Dashboard realTime={this.state.realTime} selectedMaquina = {this.state.machine} parentCallback = {this.handleTimeback} currentMode = {this.state.timePeriod}  />
+    )
+    
+  
+    default: return(
+    <DashboardGeral realTime={this.state.realTime} selectedMaquina = {this.state.machine} parentCallback = {this.handleTimeback} currentMode = {this.state.timePeriod}  />
+    )
+  }
+}
 
 render(){
   
   console.log("Time período em Appjs", this.state.timePeriod);
   
       return (
-      <div className="App">
+          <div className="App">
+         <div className="row-main">
+             <div id="left">
+             <Sidebar sidebarCallback = {this.handleCallback}/>
+                 </div> 
+                 <div id="main">
         <header className="App-header">
           <SubHeader  timeTotal = {this.state.timeTotal} timePeriod = {this.handleTimePeriod} realTime = {this.handleRealTime}/>
           <Header bigParentCallback = {this.handleCallback}  />          
         </header>
-          <Dashboard realTime={this.state.realTime} selectedMaquina = {this.state.machine} parentCallback = {this.handleTimeback} currentMode = {this.state.timePeriod}  />
-        
+        {this.handdleDashboard(this.state.machine)}
+         
+
+        </div>
+        </div>
          
          
           

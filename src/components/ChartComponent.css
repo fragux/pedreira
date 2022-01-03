@@ -6,10 +6,17 @@
 }
 
 .ReactChart{ 
-    margin: 0;
-    padding:0;
+    display: block;
+    float:none;
+    width: 100%;
+    text-align: center;
+    justify-content: stretch;
+    place-items: center;
    
-}.chart-buttons{
+    overflow: visible;
+}
+
+.chart-buttons{
     display:flex;
     flex-direction: row;
     justify-content:space-between;
@@ -17,22 +24,22 @@
 }
 
 .toggle{
-    font-size: medium;
-      margin-top: 0rem;
-      margin-bottom: 1rem;
-      margin-left: -1rem;
-      height: 2.5rem;
-      border-radius: 15px;
-      display: inline-flex;
-      justify-content: space-between;
-      background: none;
-      border:none;
+    font-size: small;
+    margin-top: 0rem;
+    margin-bottom: 1rem;
+    margin-left: -1rem;
+    height: 1.5rem;
+    border-radius: 15px;
+    display: inline-flex;
+    justify-content: space-between;
+    background: none;
+    border:none;
 }
 .toggle.linhas{
     background-color: #bbbaba;
-    width: 5.5rem;
-    padding: 0.5rem;
-    padding-left: 1rem;
+    width: 4rem;
+    padding: 0.1rem;
+    padding-left: 0.8rem;
     justify-content: center;
     border-left: none;
     border-radius: 0px 25px 25px 0px ;
@@ -40,11 +47,11 @@
 }
 .toggle.barras{
     cursor: none;
-    width: 5.5rem;
+    width: 4.2rem;
     text-align: center;
     justify-content: center;
-      padding: 0.5rem;  
-      padding-right: 1rem;    
+    padding: 0.1rem;  
+    padding-right: 0.5rem;    
     background-color: #bbbaba;
     border-radius: 25px 0 0 25px ;
     color:white;
@@ -62,15 +69,15 @@
 input[type="checkbox"]{
     cursor: pointer;
     position: relative;
-    width: 80px;
-    height: 40px;
+    width: 50px;
+    height: 24px;
     appearance: none ;
     background-color: white;
     outline: none;
     border-radius: 20px;
     box-shadow: inset 0 0 5px rgba(0,0,0,.2);
     transition: .5s;
-
+    
 }
 
 input:checked[type="checkbox"]{
@@ -80,18 +87,19 @@ input:checked[type="checkbox"]{
 input[type="checkbox"]:before{
     content: '';
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
     border-radius: 20px;
     top:0;
-    left:0;
+    left: 0px;;
     background: lightgrey;
     box-shadow: 0 2px 5px rgba(0,0,0,.2);
     transition: .5s;
-
+    
 }
 
 input:checked[type="checkbox"]:before{
-    left: 40px;
+    left: 25px;
 }
+
 
