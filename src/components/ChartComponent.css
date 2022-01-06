@@ -4,40 +4,63 @@
     margin: 0;
 
 }
+@keyframes slideInFromBottom {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+    }
 
-.ReactChart{ 
-    display: block;
-    float:none;
-    width: 100%;
-    text-align: center;
-    justify-content: stretch;
-    place-items: center;
-   
-    overflow: visible;
-}
+    @keyframes slideInFromRight {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+ .ReactChart{
+    
+    box-sizing: 0;
+    margin:0;
+    padding: 0;
+  
+ }
 
 .chart-buttons{
     display:flex;
     flex-direction: row;
-    justify-content:space-between;
-    border: 1px solid red;
+    justify-content: center;
+    
+ }
+
+.tabela{
+    background-color: #E4181D;
+    width: 9.5rem;
+    font-size: small;
+    border: none;
+    border-radius: 25px 25px 25px 25px ;
+    color: white;
+    height: 1.5rem;
+}
+.tabela:hover{
+    background: #bbbaba;
+    color: white;
 }
 
 .toggle{
     font-size: small;
     margin-top: 0rem;
-    margin-bottom: 1rem;
-    margin-left: -1rem;
-    height: 1.5rem;
     border-radius: 15px;
     display: inline-flex;
-    justify-content: space-between;
+    justify-content: center;
+    padding-bottom: 50px;
     background: none;
     border:none;
 }
 .toggle.linhas{
     background-color: #bbbaba;
     width: 4rem;
+    margin-left: -1rem;;
     padding: 0.1rem;
     padding-left: 0.8rem;
     justify-content: center;
@@ -45,6 +68,7 @@
     border-radius: 0px 25px 25px 0px ;
     color: white;
 }
+
 .toggle.barras{
     cursor: none;
     width: 4.2rem;
@@ -103,3 +127,87 @@ input:checked[type="checkbox"]:before{
 }
 
 
+.chart-chart{
+   box-sizing: border-box;
+   margin-left: 2rem;
+   padding: 0;
+   display: flex;
+   flex-direction: row;
+   width: 94%;
+   text-align: center;
+   justify-content: center;
+   place-items: center;
+  
+}
+
+.chart-chart #tooltipK{
+    flex: 20%;
+    border-radius: 1.5rem;
+    height: 20rem;
+    margin-left: 5rem;
+    padding-top: 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+    animation: 0.5s ease-out 0s 1 slideInFromRight;
+   
+}
+
+
+.chart-chart #grafico{ 
+    display: grid;
+   margin-left: 3rem;
+   width: 60%;
+   height: 30%;   
+   border-radius: 3px;
+   justify-content: center;  
+   
+}
+
+.chart-chart #grafico svg{
+     padding:-1rem;   
+}
+
+.chart-chart #tools{
+   
+    padding-left: 20px;
+    flex-direction: column;
+    justify-content: center;
+    flex: 15%;
+    
+    text-align: center;
+}
+.detalhes{
+    
+    box-sizing: border-box;
+    margin:0;
+    padding: 0;
+    height: 3rem;
+    background: white;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+
+.detalhes button{
+    border: none;
+    padding:0.2rem;
+    flex-basis: 24.8%;
+    background: #E4181D;
+    color: white;
+    cursor: default;
+}
+
+.cabecalho{
+    display: inline-block;
+    width: 54%;
+   
+    background: #E4181D;
+    color: white;
+    justify-content: center;
+    place-items: center;
+    margin-left: 0rem;
+    border-radius: 0 0rem  1rem 1rem;
+    margin-top: 3rem;
+    margin-left: -7rem;
+}

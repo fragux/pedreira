@@ -49,6 +49,7 @@ class Dashboard extends Component {
         this.handleSelectItem = this.handleSelectItem.bind(this);
         this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
         this.randomFunction = this.randomFunction.bind(this);
+        this.randomFunctionKw = this.randomFunctionKw.bind(this);
         this.props.parentCallback(this.state.timeTotal);
         this.handleResponse = this.handleResponse.bind(this);    
         console.log("Botão real time: ---->", this.props.realTime)
@@ -80,7 +81,7 @@ class Dashboard extends Component {
     handleResponse = (parentData) =>{
         this.props.parentCallback(this.state.timeTotal);
         console.log("Tempo total callback", this.state.timeTotal);     
-        this.setState(parentData)
+        this.setState({selectedMaquina: parentData})
         console.log("Dashboard: "+ parentData)
         console.log(this.renderSwitch(parentData))
         const maquinaValues = this.renderSwitch(parentData);
@@ -254,12 +255,24 @@ class Dashboard extends Component {
         return(Math.round(rand))
     };
 
+    randomFunctionKw= () =>{
+        var min = 0.2;
+        var max = 0.35;
+        let rand =  min + (Math.random() * (min));
+              
+        return(rand.toFixed(2))
+    };
+
     handleTime=(e)=>{
+        const newMachine = this.state.machine.map(({data_hora}) => {
+            return data_hora = data_hora.substring(0,6);
+          });  
 
     }
 
     render() {
         const machine = this.state.machine;
+       // console.log("Array máquina para ser alterado o formato da data--->", machine);
         if(this.props.realTime) ;
         console.log("Período selecionado passado para dashboard: " + this.props.realTime); 
         //console.log("Array a ser passado da query para const machine: ", machine);
@@ -340,9 +353,11 @@ class Dashboard extends Component {
                   
                            
                                
-                               <MyChart maquina = {maquinaValues} machine = {machine} currentItemChart = {this.currentItem}/>
 
                            
+                               <MyChart maquina = {maquinaValues} machine = {machine} currentItemChart = {this.currentItem} selectedMaquina = {selectedMaquina} kWh = {this.randomFunctionKw()} 
+                                   
+                               />
                        </>
                     
                                

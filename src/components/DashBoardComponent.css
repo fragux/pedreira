@@ -3,6 +3,11 @@ display: flexbox;
 margin: 0;
 padding: 0;
 }
+@keyframes slideInFromBottom {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+    }
+
 .container-dashboard-d{   
     border: none;
     margin-top: -2.5rem;
@@ -26,6 +31,7 @@ padding: 0;
     justify-content: center;
     border: 1px solid rgb(248, 248, 248);
     border-radius: 0.6rem;
+    animation: 0.5s ease-out 0s 1 slideInFromBottom;
 }
 
 .card-box-header::before{
