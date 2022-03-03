@@ -305,9 +305,9 @@ class Dashboard extends Component {
            {maquinaValues.maquina.map(
         ({ id, type, TotalHours, Hours, WaterConsumption, WireSpeed, LubrificationTimeTotal, EletricConsumption, Production }) => 
             
-            <><div className="container-dashboard-d col-12">
+            <><div className="container-dashboard-d col-12 ">
                        <div className="row-dashboard"eventkey={this.state.key}>
-                           <Card className="card-box-header" style={{ backgroundColor: "#E4181D", color: "#ffffff" }} onClick={() => this.handleSelectItem(1, 'none')}>
+                           <Card className="card-box-header col-md-3" style={{ backgroundColor: "#E4181D", color: "#ffffff" }} onClick={() => this.handleSelectItem(1, 'none')}>
                                
                                <h2 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}>{id}</h2>
                               

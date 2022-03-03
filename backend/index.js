@@ -7,9 +7,10 @@ const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d99
 
 const db = mysql.createPool({
     host: 'orion.morecolab.pt',
-    port: '3306',
+    port: '5505',
     user: 'pedra',
     password: 'pedra',
+    insecureAuth : true,
     database: 'db',
 })
 
