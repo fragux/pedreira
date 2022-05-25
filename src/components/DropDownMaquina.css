@@ -1,15 +1,12 @@
-.dropdown{   
-    cursor: pointer;
-    
+.dropdown {
+  cursor: pointer;
 }
 
-.dropdownlist{
-    text-align: left;
-    padding: 1rem;
+.dropdownlist {
+  text-align: left;
+  padding: 1rem;
 }
-.dropdownitem:hover{
-    background-color: #E4181D;
-    color: white;
+.dropdownitem:hover {
+  background-color: #e4181d;
+  color: white;
 }
-
-

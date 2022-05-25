@@ -1,4 +1,4 @@
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -8,27 +8,33 @@ body {
 }
 
 @keyframes wait {
-  from { transform: translateY(20px); }
-  to { transform: translateY(20px); }
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(20px);
+  }
 }
 
 @keyframes slideInFromBottom {
-from { transform: translateY(20px); opacity: 0; }
-to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 body {
-    background-size: cover;
-    background-repeat: no-repeat;
-    overflow: hidden;
-    animation: 0.5s ease-out 0s 1 slideInFromBottom;
-    
-  }
-
-.login{
-    border-radius: 15%;
-    border-color: none;
-    
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  animation: 0.5s ease-out 0s 1 slideInFromBottom;
 }
 
-
+.login {
+  border-radius: 15%;
+  border-color: none;
+}

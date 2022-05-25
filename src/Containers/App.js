@@ -11,7 +11,7 @@ class App extends React.Component {
 
     // main
     main_title: "LOGIN",
-    main_info: "Insira o utilizador e a sua password"
+    main_info: "Insira o utilizador e a sua password",
   };
 
   render() {

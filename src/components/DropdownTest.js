@@ -1,18 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   ButtonDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-} from 'reactstrap'
+} from "reactstrap";
 
 const Drop = ({ buttonDropdownName, actionsArray }) => {
-  const [dropdownOpen, setOpen] = useState(false)
+  const [dropdownOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen(!dropdownOpen)
+  const toggle = () => setOpen(!dropdownOpen);
 
   return (
-    <ButtonDropdown isOpen={dropdownOpen} toggle={toggle} color='warning'>
+    <ButtonDropdown isOpen={dropdownOpen} toggle={toggle} color="warning">
       <DropdownToggle caret>{buttonDropdownName}</DropdownToggle>
       <DropdownMenu>
         {actionsArray.map((action) => (
@@ -20,7 +20,7 @@ const Drop = ({ buttonDropdownName, actionsArray }) => {
         ))}
       </DropdownMenu>
     </ButtonDropdown>
-  )
-}
+  );
+};
 
-export default Drop
+export default Drop;

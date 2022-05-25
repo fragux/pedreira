@@ -1,60 +1,54 @@
-*{
-display: flexbox;
-margin: 0;
-padding: 0;
+* {
+  display: flexbox;
+  margin: 0;
+  padding: 0;
 }
 @keyframes slideInFromBottom {
-    from { transform: translateY(15px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-    }
-
-.container-dashboard-d{   
-    border: none;
-    margin-top: -2.5rem;
-    
+  from {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.row-dashboard{
-    
-    display: flex;
-    flex-direction: row;
-    margin-right: 1rem;
-    padding: 1rem;
-    justify-content:space-around;
-    
-    
-    
-
-}
-.card-box-header{
-    width: 10rem;
-    justify-content: center;
-    border: 1px solid rgb(248, 248, 248);
-    border-radius: 0.6rem;
-    animation: 0.5s ease-out 0s 1 slideInFromBottom;
+.container-dashboard-d {
+  border: none;
+  margin-top: -2.5rem;
+  width: auto;
 }
 
-.card-box-header::before{
-    transform: translateY(-5px);   
-    border-bottom: 5px solid #E4181D;
-
-    
+.row-dashboard {
+  display: flex;
+  flex-direction: row;
+  margin-right: 1rem;
+  padding: 1rem;
+  justify-content: space-around;
+}
+.card-box-header {
+  width: 10rem;
+  justify-content: center;
+  border: 1px solid rgb(248, 248, 248);
+  border-radius: 0.6rem;
+  animation: 0.5s ease-out 0s 1 slideInFromBottom;
 }
 
-.card-box-header:hover{
-    transform: translateY(-5px);   
-    border-bottom: 5px solid #E4181D;
-    transition: all .2s ease;
-    
+.card-box-header::before {
+  transform: translateY(-5px);
+  border-bottom: 5px solid #e4181d;
 }
 
-.card-box-header.active{
-    box-shadow: inset 0px 5px 5px rgba(0,0,0,.15); 
-    border-bottom: 5px solid #E4181D;
-    color: #E4181D;
-    transform: translateY(7px);
-};
+.card-box-header:hover {
+  transform: translateY(-5px);
+  border-bottom: 5px solid #e4181d;
+  transition: all 0.2s ease;
+}
 
-
-
-
+.card-box-header.active {
+  box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15);
+  border-bottom: 5px solid #e4181d;
+  color: #e4181d;
+  transform: translateY(7px);
+}

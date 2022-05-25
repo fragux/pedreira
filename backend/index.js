@@ -18,10 +18,6 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-
-   
-
-
 app.post('/sendnotification', (req, res) => {
     const data = req.body.data;
     console.log("Mensagem a enviar: ", data);
@@ -281,6 +277,60 @@ app.get('/lousada2020/mes', (req, res) =>{
     })
 });
 
+//endpoint para CNC
+
+app.get('/machine/cnc1', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `cnc (1)` ";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+app.get('/machine/cnc1/last', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `cnc (1)` ORDER BY `DateTime` DESC LIMIT 2";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+app.get('/machine/cnc2', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `cnc (2)` ";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
 app.listen(3001, ()=> {
     console.log("Running on port 3001")
+});
+
+app.get('/machine/cnc2/last', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `cnc (2)` ORDER BY `DateTime` DESC LIMIT 1";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
 });

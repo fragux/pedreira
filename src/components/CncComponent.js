@@ -33,6 +33,7 @@ class Dashboard extends Component {
       currentItem: "",
       key: 1,
       machine: [],
+      machine1: [],
       timeTotal: "",
       timePeriod: this.props.currentMode,
       corrente: "",
@@ -40,8 +41,8 @@ class Dashboard extends Component {
       realTime: this.props.realTime,
       statusCorrente: false,
       statusVelocidade: false,
-      api : this.props.api,
-      endPoint: this.props.endPoint
+      api: this.props.api,
+      endPoint: this.props.endPoint,
     };
     this.getData = this.getData.bind(this);
     this.renderSwitch = this.renderSwitch.bind(this);
@@ -51,21 +52,25 @@ class Dashboard extends Component {
     this.randomFunctionKw = this.randomFunctionKw.bind(this);
     this.props.parentCallback(this.state.timeTotal);
     this.handleResponse = this.handleResponse.bind(this);
+    this.renderMachine = this.renderMachine.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
-  
-  getData () {
-    
-    /*axios.get(this.state.api + this.state.endPoint).then((response) => {
-              console.log("Get DATA from function getData() and setInterval: ", response.data);
-              this.setState({ machine: response.data });
-              console.log(
-                "Atribuição do GET ao estado. ",
-                this.props.selectedMaquina,
-                this.currentItem
-              );
-            });*/
-            console.log("API -> ", this.state.endPoint);
+
+  getData() {
+    axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
+      console.log(
+        "Get DATA from function getData() and setInterval: ",
+        response.data
+      );
+      this.setState({ machine: response.data });
+    });
+    axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
+      console.log(
+        "Get DATA from function getData() and setInterval: ",
+        response.data
+      );
+      this.setState({ machine1: response.data });
+    });
   }
 
   componentDidMount() {
@@ -73,21 +78,19 @@ class Dashboard extends Component {
       machine: this.machine,
       timeTotal: this.state.timeTotal,
       realTime: this.props.realTime,
-      api : "http://localhost:3001/",
-      endPoint: "/monofio/dia",
+      api: "http://localhost:3001/",
+      endPoint: "machine/cnc1/last",
     });
-    console.log("teste api + endpoint", this.state.api, this.state.endPoint)
-
-    setInterval(() => {
-     // this.getData();
-      if (this.props.realTime)
+    console.log("teste api + endpoint", this.state.api, this.state.endPoint);
+    //this.getData();
+    setInterval(this.getData(), 300000);
+    /*if (this.props.realTime)
         this.setState((prevState) => {
           return {
             corrente: this.randomFunctionCorrente(),
             velocidade: this.randomFunction(),
           };
-        });
-    }, 10500);
+        });*/
   }
 
   handleResponse = (parentData) => {
@@ -121,7 +124,7 @@ class Dashboard extends Component {
       case "MONOFIO NFC 2000":
         switch (this.props.currentMode) {
           case "dia":
-            this.setState({endPoint: "/monofio/dia"});
+            this.setState({ endPoint: "/monofio/dia" });
             axios.get("http://localhost:3001/monofio/dia").then((response) => {
               console.log("Get do item selecionado: ", response.data);
               this.setState({ machine: response.data });
@@ -293,8 +296,113 @@ class Dashboard extends Component {
     });
   };
 
+  renderMachine = (machine) => {
+    return (
+        machine?.map(
+      ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
+        <>
+          <div className="container-dashboard-d col-12 ">
+            <div className="row-dashboard" eventkey={this.state.key}>
+              <Card
+                className="card-box-header col-md-3"
+                style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
+                onClick={() => this.handleSelectItem(1, "none")}
+              >
+                
+                <h5 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}>
+                  {Type.toString().toUpperCase()}
+                </h5>
+              </Card>
+              <Card
+                eventkey={7}
+                onClick={() => this.handleSelectItem(1, "tempo")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "tempo" ? " active" : " ")
+                }
+              >
+                <h6>Data</h6>
+                <h6 style={{ color: "#333" }}><b>{DateTime.toString().substring(0,10)}</b></h6>
+                <h6 style={{ color: "#333" }}>{DateTime.toString().substring(11,16)}</h6>
+                <h6>Última leitura </h6>
+              </Card>
+              <Card
+                eventkey={1}
+                onClick={() => this.handleSelectItem(1, "pecas")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "pecas" ? " active" : " ")
+                }
+              >
+                <h6>Production</h6>
+                <h1 style={{ color: "#333" }}>{Production}%</h1>
+                <h6>UNI </h6>
+              </Card>
+              <Card
+                eventkey={2}
+                onClick={() => this.handleSelectItem(2, "corrente")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "corrente" ? " active" : " ")
+                }
+              >
+                <h6>Power</h6>
+                <h1 style={{ color: "#333" }}>{Power} </h1>
+                <h6>Ligado/Desligado</h6>
+                <span
+                  className={"spanc" + (Power === "On" ? " down" : " active")}
+                ></span>
+              </Card>
+              <Card
+                eventkey={3}
+                onClick={() => this.handleSelectItem(3, "horas")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "horas" ? " active" : "")
+                }
+              >
+                <h6>Trabalho</h6>
+                <h1 style={{ color: "#333" }}>{Job}</h1>
+                <h6>Executado</h6>
+              </Card>
+              <Card
+                eventkey={4}
+                onClick={() => this.handleSelectItem(4, "agua")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "agua" ? " active" : "")
+                }
+              >
+                <h6>Tensão</h6>
+                <h1 style={{ color: "#333" }}>
+                  {Tension === null ? 0 : parseFloat(Tension).toFixed(0)}
+                </h1>
+                <h6>Volts</h6>
+              </Card>
+              <Card
+                eventkey={5}
+                onClick={() => this.handleSelectItem(5, "velocidade")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "velocidade" ? " active" : " ")
+                }
+              >
+                <h6>Alarme</h6>
+                <h1 style={{ color: "#333" }}>{Alarm}</h1>
+                <h6>Tipo</h6>
+                <span
+                  className={"spanc" + (Alarm != "Clear" ? " active" : " down")}
+                ></span>
+              </Card>
+            </div>
+          </div>
+        </>
+      )
+    ));
+  };
+
   render() {
-    const machine = this.state.machine;
+    //const maquinaValues = this.state.machine;
     // console.log("Array máquina para ser alterado o formato da data--->", machine);
     if (this.props.realTime);
     console.log(
@@ -305,8 +413,8 @@ class Dashboard extends Component {
     const selectedMaquina = this.props.selectedMaquina;
     // console.log("Máquina selecionada: ", this.props.selectedMaquina )
     //this.handleSelectedMaquina(this.props.selectedMaquina);
-    const maquinaValues = this.renderSwitch(selectedMaquina);
-    const values = maquinaValues.maquina.map(
+    //const maquinaValues = this.renderSwitch(selectedMaquina);
+    /*const values = maquinaValues.maquina.map(
       ({
         id,
         type,
@@ -328,148 +436,20 @@ class Dashboard extends Component {
             Velocidade do Fio:${WireSpeed.value}
             Tempo Lubrificação:${LubrificationTimeTotal.value}
             `
-    );
+    );*/
 
-    console.log(values);
+    //console.log(values);
     console.log("Valor tempo: ", this.state.timeTotal);
 
     //console.log(maquinaValues[0]);
     // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
-    return (
-      <>
-        {maquinaValues.maquina.map(
-          ({
-            id,
-            type,
-            TotalHours,
-            Hours,
-            WaterConsumption,
-            WireSpeed,
-            LubrificationTimeTotal,
-            EletricConsumption,
-            Production,
-          }) => (
-            <>
-              <div className="container-dashboard-d col-12 ">
-                <div className="row-dashboard" eventkey={this.state.key}>
-                  <Card
-                    className="card-box-header col-md-3"
-                    style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
-                    onClick={() => this.handleSelectItem(1, "none")}
-                  >
-                    <h2
-                      style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
-                    >
-                      {id}
-                    </h2>
-                  </Card>
-                  <Card
-                    eventkey={1}
-                    onClick={() => this.handleSelectItem(1, "pecas")}
-                    className={
-                      "card-box-header" +
-                      (this.currentItem === "pecas" ? " active" : " ")
-                    }
-                  >
-                    <h6>Peças Produzidas</h6>
-                    <h1 style={{ color: "#333" }}>{Production.value}</h1>
-                    <h6>UNI </h6>
-                  </Card>
-                  <Card
-                    eventkey={2}
-                    onClick={() => this.handleSelectItem(2, "corrente")}
-                    className={
-                      "card-box-header" +
-                      (this.currentItem === "corrente" ? " active" : " ")
-                    }
-                  >
-                    <h6>Consumo Elétrico </h6>
-                    <h1 style={{ color: "#333" }}>
-                      {this.randomFunctionCorrente()}{" "}
-                    </h1>
-                    <h6>Amperes</h6>
-                    <span
-                      className={
-                        "spanc" +
-                        (this.state.statusCorrente === true
-                          ? " active"
-                          : " down")
-                      }
-                    ></span>
-                  </Card>
-                  <Card
-                    eventkey={3}
-                    onClick={() => this.handleSelectItem(3, "horas")}
-                    className={
-                      "card-box-header" +
-                      (this.currentItem === "horas" ? " active" : "")
-                    }
-                  >
-                    <h6>Funcionamento</h6>
-                    <h1 style={{ color: "#333" }}>{Hours.value}</h1>
-                    <h6>Horas</h6>
-                  </Card>
-                  <Card
-                    eventkey={4}
-                    onClick={() => this.handleSelectItem(4, "agua")}
-                    className={
-                      "card-box-header" +
-                      (this.currentItem === "agua" ? " active" : "")
-                    }
-                  >
-                    <h6>Consumo Água</h6>
-                    <h1 style={{ color: "#333" }}>{WaterConsumption.value}</h1>
-                    <h6>Litros</h6>
-                  </Card>
-                  <Card
-                    eventkey={5}
-                    onClick={() => this.handleSelectItem(5, "velocidade")}
-                    className={
-                      "card-box-header" +
-                      (this.currentItem === "velocidade" ? " active" : " ")
-                    }
-                  >
-                    <h6>Velocidade FIO</h6>
-                    <h1 style={{ color: "#333" }}>{this.randomFunction()}</h1>
-                    <h6>RPM</h6>
-                    <span
-                      className={
-                        "spanc" +
-                        (this.state.statusVelocidade === true
-                          ? " active"
-                          : " down")
-                      }
-                    ></span>
-                  </Card>
-                  <Card
-                    eventkey={6}
-                    onClick={() => this.handleSelectItem(6, "lubri")}
-                    className={
-                      "card-box-header" +
-                      (this.currentItem === "lubri" ? " active" : "")
-                    }
-                  >
-                    <h6>Lubrificação</h6>
-                    <h1 style={{ color: "#333" }}>
-                      {LubrificationTimeTotal.value}
-                    </h1>
-                    <h6>Horas</h6>
-                  </Card>
-                </div>
-              </div>
-
-              <MyChart
-                maquina={maquinaValues}
-                machine={machine}
-                currentItemChart={this.currentItem}
-                selectedMaquina={selectedMaquina}
-                kWh={this.randomFunctionKw()}
-              />
-            </>
-          )
-        )}
-      </>
-    );
+    return <>
+        {this.renderMachine(this.state.machine?.slice(1))}
+        <p></p>
+        
+        {this.renderMachine(this.state.machine1)}
+            </>;
+        
   }
 }
 
