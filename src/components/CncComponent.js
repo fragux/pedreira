@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 //import { Media } from 'reactstrap';
+import { ProgressBar, Badge } from "react-bootstrap";
 import {
   Card,
   /* CardTitle,
@@ -17,6 +18,8 @@ import MyChart from "./ChartComponent";
 import "./DashBoardComponent.css";
 import axios from "axios";
 import Api from "twilio/lib/rest/Api";
+import "./CncComponent.css";
+import XML from "../data/relatorio.xml";
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
@@ -43,6 +46,11 @@ class Dashboard extends Component {
       statusVelocidade: false,
       api: this.props.api,
       endPoint: this.props.endPoint,
+      production1: 0,
+      production2: 0,
+      trabalhosExec: 0,
+      trabalhosExec1: 0,
+      standBy: false,
     };
     this.getData = this.getData.bind(this);
     this.renderSwitch = this.renderSwitch.bind(this);
@@ -53,8 +61,12 @@ class Dashboard extends Component {
     this.props.parentCallback(this.state.timeTotal);
     this.handleResponse = this.handleResponse.bind(this);
     this.renderMachine = this.renderMachine.bind(this);
+    this.calcJob = this.calcJob.bind(this);
+    this.convertXmlToJson = this.convertXmlToJson.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
+
+ 
 
   getData() {
     axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
@@ -71,27 +83,49 @@ class Dashboard extends Component {
       );
       this.setState({ machine1: response.data });
     });
+
+    axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
+      this.setState({ production1: response.data });
+    });
+    axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
+      this.setState({ production2: response.data });
+    });
+    this.calcJob();
+    console.log("Parser XML -> JSON: ", this.convertXmlToJson(XML));
   }
 
   componentDidMount() {
-    this.setState({
-      machine: this.machine,
-      timeTotal: this.state.timeTotal,
-      realTime: this.props.realTime,
-      api: "http://localhost:3001/",
-      endPoint: "machine/cnc1/last",
-    });
-    console.log("teste api + endpoint", this.state.api, this.state.endPoint);
-    //this.getData();
-    setInterval(this.getData(), 300000);
-    /*if (this.props.realTime)
+    this.getData();
+    setInterval(() => {
+      this.getData();
+      this.render();
+      if (this.props.realTime)
         this.setState((prevState) => {
           return {
-            corrente: this.randomFunctionCorrente(),
-            velocidade: this.randomFunction(),
+            // corrente: this.randomFunctionCorrente(),
+            //velocidade: this.randomFunction(),
+            //production: Production
           };
-        });*/
+        });
+    }, 100000);
   }
+
+  convertXmlToJson = (xmlString) => {
+    const XMLDATA = axios.get(xmlString, {
+        "Content-Type": "application/xml; charset=utf-8"
+     })
+     .then((response) => {
+        console.log('Your xml file as string', response.data);
+     });
+
+    const jsonData = {};
+    /*for (const result of XMLDATA.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
+        const key = result[1] || result[3];
+        const value = result[2] && this.convertXmlToJson(result[2]); //recusrion
+        jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
+    }*/
+    return jsonData;
+}
 
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
@@ -296,47 +330,43 @@ class Dashboard extends Component {
     });
   };
 
+  calcJob = () => {
+    //new Date().getMinutes() - (new Date().getMinutes()%5)
+    /* const compareJob = this.state.production1?.map(({ DateTime }) => {
+        return (DateTime);
+      });*/
+    if (this.state.production1) {
+      let count = 0;
+      this.state.production1?.map(({ nJob }) => {
+        if (nJob != null) count++;
+      });
+      this.setState({ trabalhosExec: count });
+    }
+    if (this.state.production2) {
+      let count1 = 0;
+      this.state.production2?.map(({ nJob }) => {
+        if (nJob != null) count1++;
+      });
+
+      this.setState({ trabalhosExec1: count1 });
+    }
+  };
+
   renderMachine = (machine) => {
-    return (
-        machine?.map(
+    return machine?.map(
       ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
         <>
-          <div className="container-dashboard-d col-12 ">
+          <div className="container-dashboard-d ">
             <div className="row-dashboard" eventkey={this.state.key}>
               <Card
-                className="card-box-header col-md-3"
+                className={
+                  "card-box-header " +
+                  (Job === 4 || Job === 3 ? "blinkIdle" : "")
+                }
                 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
                 onClick={() => this.handleSelectItem(1, "none")}
               >
-                
-                <h5 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}>
-                  {Type.toString().toUpperCase()}
-                </h5>
-              </Card>
-              <Card
-                eventkey={7}
-                onClick={() => this.handleSelectItem(1, "tempo")}
-                className={
-                  "card-box-header" +
-                  (this.currentItem === "tempo" ? " active" : " ")
-                }
-              >
-                <h6>Data</h6>
-                <h6 style={{ color: "#333" }}><b>{DateTime.toString().substring(0,10)}</b></h6>
-                <h6 style={{ color: "#333" }}>{DateTime.toString().substring(11,16)}</h6>
-                <h6>Última leitura </h6>
-              </Card>
-              <Card
-                eventkey={1}
-                onClick={() => this.handleSelectItem(1, "pecas")}
-                className={
-                  "card-box-header" +
-                  (this.currentItem === "pecas" ? " active" : " ")
-                }
-              >
-                <h6>Production</h6>
-                <h1 style={{ color: "#333" }}>{Production}%</h1>
-                <h6>UNI </h6>
+                <h5>{Type.toString().toUpperCase()}</h5>
               </Card>
               <Card
                 eventkey={2}
@@ -347,12 +377,74 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Power</h6>
-                <h1 style={{ color: "#333" }}>{Power} </h1>
+                <h2 style={{ color: "#333" }}>
+                  {Job === 4 ? "Standby" : Power}
+                </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
-                  className={"spanc" + (Power === "On" ? " down" : " active")}
+                  className={
+                    "spanc" +
+                    (Power === "On"
+                      ? " down"
+                      : Job === 4
+                      ? " blink"
+                      : " active")
+                  }
                 ></span>
               </Card>
+              <Card
+                eventkey={7}
+                onClick={() => this.handleSelectItem(1, "tempo")}
+                className={
+                  "card-box-header" +
+                  (this.currentItem === "tempo" ? " active" : " ")
+                }
+              >
+                <h6>Data</h6>
+                <h6 style={{ color: "#333" }}>
+                  <b>{DateTime.toString().substring(0, 10)}</b>
+                </h6>
+                <h6 style={{ color: "#333" }}>
+                  {DateTime.toString().substring(11, 16)}
+                </h6>
+                <h6>Última leitura </h6>
+              </Card>
+              <Card
+                eventkey={1}
+                onClick={() => this.handleSelectItem(1, "pecas")}
+                className={
+                  "card-box-header col-lg col-sm-8 col-md-8" +
+                  (Production === 100 ? " blinkDone" : " ")
+                }
+              >
+                <h6>Produção</h6>
+                <span className="badgeWork">
+                  <Badge bg="danger" style={{ fontWeight: "lighter" }}>
+                    #
+                    {Type === "stonecut"
+                      ? this.state.production1.length
+                      : this.state.production2.length}
+                  </Badge>
+                </span>
+                <h1 style={{ color: "#333" }}>{Production}%</h1>
+                <h6>
+                  <ProgressBar
+                    animated
+                    striped
+                    variant={
+                      Production >= 90
+                        ? "success"
+                        : Production <= 30
+                        ? "danger"
+                        : "warning"
+                    }
+                    now={Production}
+                    //label={`${Production}%`}
+                    style={{ height: "26px" }}
+                  />
+                </h6>
+              </Card>
+
               <Card
                 eventkey={3}
                 onClick={() => this.handleSelectItem(3, "horas")}
@@ -383,22 +475,28 @@ class Dashboard extends Component {
                 eventkey={5}
                 onClick={() => this.handleSelectItem(5, "velocidade")}
                 className={
-                  "card-box-header" +
-                  (this.currentItem === "velocidade" ? " active" : " ")
+                  "card-box-header" + (Alarm !== "Clear" ? " blink" : " ")
                 }
               >
                 <h6>Alarme</h6>
-                <h1 style={{ color: "#333" }}>{Alarm}</h1>
+                {Alarm.length > 6 ? (
+                  <h6 style={{ color: "#333", fontSize: 10}}>{Alarm}</h6>
+                ) : (
+                  <h1 style={{ color: "#333" }}>{Alarm}</h1>
+                )}
+
                 <h6>Tipo</h6>
                 <span
-                  className={"spanc" + (Alarm != "Clear" ? " active" : " down")}
+                  className={
+                    "spanc" + (Alarm !== "Clear" ? " active" : " down")
+                  }
                 ></span>
               </Card>
             </div>
           </div>
         </>
       )
-    ));
+    );
   };
 
   render() {
@@ -443,13 +541,14 @@ class Dashboard extends Component {
 
     //console.log(maquinaValues[0]);
     // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
-    return <>
+    return (
+      <>
         {this.renderMachine(this.state.machine?.slice(1))}
         <p></p>
-        
+
         {this.renderMachine(this.state.machine1)}
-            </>;
-        
+      </>
+    );
   }
 }
 

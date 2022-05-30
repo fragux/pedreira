@@ -280,7 +280,7 @@ app.get('/lousada2020/mes', (req, res) =>{
 //endpoint para CNC
 
 app.get('/machine/cnc1', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `cnc (1)` ";
+    const sqlSelect = "SELECT * FROM `CNC1`";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -293,7 +293,21 @@ app.get('/machine/cnc1', (req, res) =>{
 });
 
 app.get('/machine/cnc1/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `cnc (1)` ORDER BY `DateTime` DESC LIMIT 2";
+    const sqlSelect = "SELECT * FROM `CNC1` ORDER BY `DateTime` DESC LIMIT 2";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+
+app.get('/machine/cnc1/job', (req, res) =>{
+    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC1` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production = 0";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -306,7 +320,35 @@ app.get('/machine/cnc1/last', (req, res) =>{
 });
 
 app.get('/machine/cnc2', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `cnc (2)` ";
+    const sqlSelect = "SELECT * FROM `CNC2` ";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+
+
+app.get('/machine/cnc2/last', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` ORDER BY `DateTime` DESC LIMIT 1";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+app.get('/machine/cnc2/job', (req, res) =>{
+    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production = 0";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -320,17 +362,4 @@ app.get('/machine/cnc2', (req, res) =>{
 
 app.listen(3001, ()=> {
     console.log("Running on port 3001")
-});
-
-app.get('/machine/cnc2/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `cnc (2)` ORDER BY `DateTime` DESC LIMIT 1";
-    db.query(sqlSelect, (err, result) =>{
-        if (err){
-            console.log(err);
-        }
-        else {
-            res.send(result);
-            console.log(result);
-        }
-    })
 });

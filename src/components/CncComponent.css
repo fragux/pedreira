@@ -1,0 +1,46 @@
+@keyframes blink { 
+    50% { border-color: #ff0000; } 
+ }
+
+ @keyframes blinkDone { 
+    50% { border-color: #00b233; } 
+ }
+
+ @keyframes blinkIdle { 
+    50% { background: #fea32c; } 
+ }
+
+ .blink{ /*or other element you want*/
+     animation: blink .5s step-end infinite alternate;
+     border: 3px solid
+ }
+
+ .blinkDone{ /*or other element you want*/
+    animation: blinkDone .5s step-end infinite alternate;
+    border: 3px solid
+}
+
+.blinkIdle{ /*or other element you want*/
+    animation: blinkIdle .5s step-end infinite alternate;
+    border: 3px solid
+}
+
+ .card-box-header-d {
+    width: 10rem;
+    justify-content: center;
+    border: 1px solid rgb(248, 248, 248);
+    border-radius: 0.6rem;
+    animation: 0.5s ease-out 0s 1 slideInFromBottom;
+  }
+ 
+  .badgeWork{  
+      
+    position: absolute;  
+    right:0;
+    font-size: x-large; 
+    margin-right: 1.5rem;
+    margin-bottom: 5rem;
+
+  }
+
+  
