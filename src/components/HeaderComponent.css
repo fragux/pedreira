@@ -1,6 +1,6 @@
 .container-header {
   background-color: #e4181d;
-  min-height: 11vh;
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   text-align: right;
@@ -10,9 +10,32 @@
   border-radius: 0px 0px 0px 50px;
   padding-top: 2rem;
   box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
-  margin-bottom: 9.5rem;
-  margin-top: -15rem;
+  box-shadow: 0px 10px 5px rgba(0, 0, 0, .20);
+  margin-bottom: 0rem;
+  margin-top: 0rem;
+  z-index: 1;
+  
+}
+
+.container-header::before {
+  content: "";  
+  position: fixed;
+  float: left;
+  top:0;
+  width:100vw;
+  height: 15vh;
+  border-radius: 00%; /* NEW */
+  background:  #bbbaba;
+  z-index: -1;
+}
+
+.container-header::after {
+  content: "";  
+  position: absolute;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, .25);
+  border-radius: 00%; /* NEW */
+  background:  #bbbaba;
+  z-index: 1;
 }
 
 .row-header {

@@ -1,7 +1,8 @@
-.App-header {
+.App-header-m {
   font-size: calc(10px + 2vmin);
   color: white;
   border-radius: 0px 0px 0px 50px;
+  
 }
 
 .App-link {
@@ -9,10 +10,10 @@
 }
 
 .row.dropdown {
-  margin-top: 10rem;
   text-align: right;
   cursor: pointer;
 }
+
 .container-label {
   display: flex;
   flex-direction: row;
@@ -50,9 +51,34 @@ input:checked[type="checkbox"] {
 }
 
 .row-main #left {
-  margin-top: -3rem;
+  margin-top: 0rem;
 }
 
 .row-main #main {
-  flex: 70%;
+  flex:content;
+ 
+
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.container-body::-webkit-scrollbar {
+  display: none;
+}
+
+.container-top{ 
+  position: fixed;
+  width: 100%;
+  display:contents;
+  z-index: 5;
+}
+.container-body{ 
+  margin-top: 0.5rem;
+  height: 100%;
+ overflow-y: scroll;
+ -ms-overflow-style: none;  /* IE and Edge */
+ scrollbar-width: none;  /* Firefox */
+ z-index: -20;
+ scroll-behavior: smooth;
+ padding-bottom: 30rem;
+
 }

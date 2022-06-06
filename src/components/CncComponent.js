@@ -20,6 +20,9 @@ import axios from "axios";
 import Api from "twilio/lib/rest/Api";
 import "./CncComponent.css";
 import XML from "../data/relatorio.xml";
+import XMLParser from "react-xml-parser";
+import * as HiIcons from "react-icons/hi";
+import * as MdIcons from "react-icons/md"
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
@@ -46,11 +49,15 @@ class Dashboard extends Component {
       statusVelocidade: false,
       api: this.props.api,
       endPoint: this.props.endPoint,
-      production1: 0,
-      production2: 0,
+      production1: [],
+      production2: [],
       trabalhosExec: 0,
       trabalhosExec1: 0,
       standBy: false,
+      isOffline: false,
+      resultXML: "",
+      timeStartCNC1: [],
+      timeStartCNC2: [],
     };
     this.getData = this.getData.bind(this);
     this.renderSwitch = this.renderSwitch.bind(this);
@@ -63,10 +70,9 @@ class Dashboard extends Component {
     this.renderMachine = this.renderMachine.bind(this);
     this.calcJob = this.calcJob.bind(this);
     this.convertXmlToJson = this.convertXmlToJson.bind(this);
+    this.calcIsOffLine = this.calcIsOffLine.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
-
- 
 
   getData() {
     axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
@@ -90,8 +96,16 @@ class Dashboard extends Component {
     axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
       this.setState({ production2: response.data });
     });
+    axios.get("http://localhost:3001/machine/cnc1/start").then((response) => {
+      this.setState({ timeStartCNC1: response.data });
+    });
+    axios.get("http://localhost:3001/machine/cnc2/start").then((response) => {
+      this.setState({ timeStartCNC2: response.data });
+    });
     this.calcJob();
-    console.log("Parser XML -> JSON: ", this.convertXmlToJson(XML));
+    this.convertXmlToJson(XML);
+    this.calcIsOffLine();
+    
   }
 
   componentDidMount() {
@@ -110,22 +124,45 @@ class Dashboard extends Component {
     }, 100000);
   }
 
-  convertXmlToJson = (xmlString) => {
-    const XMLDATA = axios.get(xmlString, {
-        "Content-Type": "application/xml; charset=utf-8"
-     })
-     .then((response) => {
-        console.log('Your xml file as string', response.data);
-     });
+  calcIsOffLine = (array) => {
+    let currentDate = new Date();
+    let result = new Boolean();
+    array?.map(({DateTime}) => {
+      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+      let diff = currentDate.getTime() - Date.parse(DateTime);
+      let vmindiff = Math.floor(diff/1000/60); // in minutes
+      diff -= vmindiff*1000*60
+      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
+      console.log( parseInt(DateTime.substring(8,10)));
+      if(vmindiff > 10){
+        //console.log("Teste para verificar se está offline: ", true);
+        result = true;
+      }else result = false;
 
-    const jsonData = {};
+      //return this.setState({isOffline: true});
+    });
+    return result;
+  }
+
+  convertXmlToJson = (xmlString) => {
+    axios
+      .get(xmlString, {
+        "Content-Type": "application/xml; charset=utf-8",
+      })
+      .then((response) => {
+        //console.log('Your xml file as string', response.data);
+        this.setState({ resultXML: response.data });
+      });
+    var jsonData = new XMLParser().parseFromString(this.state.resultXML);
+    console.log("PARSER - TESTE -> ", jsonData);
+    //var jsonData = new XMLParser().parseFromString(XMLDATA);
     /*for (const result of XMLDATA.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
         const key = result[1] || result[3];
         const value = result[2] && this.convertXmlToJson(result[2]); //recusrion
         jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
     }*/
-    return jsonData;
-}
+    // return jsonData;
+  };
 
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
@@ -330,34 +367,22 @@ class Dashboard extends Component {
     });
   };
 
-  calcJob = () => {
-    //new Date().getMinutes() - (new Date().getMinutes()%5)
-    /* const compareJob = this.state.production1?.map(({ DateTime }) => {
-        return (DateTime);
-      });*/
-    if (this.state.production1) {
-      let count = 0;
-      this.state.production1?.map(({ nJob }) => {
-        if (nJob != null) count++;
-      });
-      this.setState({ trabalhosExec: count });
-    }
-    if (this.state.production2) {
-      let count1 = 0;
-      this.state.production2?.map(({ nJob }) => {
-        if (nJob != null) count1++;
-      });
-
-      this.setState({ trabalhosExec1: count1 });
-    }
+  calcJob = (array) => {
+      const initialValue = 0;
+      var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
+    );
+        
+        console.log("Calculo dos trabalhos realizados: ", result);
+        return array;
   };
 
   renderMachine = (machine) => {
+    let currentDate = new Date();
     return machine?.map(
       ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
         <>
           <div className="container-dashboard-d ">
-            <div className="row-dashboard" eventkey={this.state.key}>
+            <div className="row" eventkey={this.state.key}>
               <Card
                 className={
                   "card-box-header " +
@@ -378,15 +403,15 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  {Job === 4 ? "Standby" : Power}
+                  { Job === 4  || Job === 3 ? "Standby" : Power}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
                   className={
                     "spanc" +
-                    (Power === "On"
+                    (Job === 1
                       ? " down"
-                      : Job === 4
+                      : Job === 4 || Job === 3
                       ? " blink"
                       : " active")
                   }
@@ -400,29 +425,54 @@ class Dashboard extends Component {
                   (this.currentItem === "tempo" ? " active" : " ")
                 }
               >
-                <h6>Data</h6>
-                <h6 style={{ color: "#333" }}>
-                  <b>{DateTime.toString().substring(0, 10)}</b>
+                <h6>Tempo Ligada</h6>
+
+                <h2 style={{ color: "#333" }}>
+                  {(Type === "stonecut") ? Math.abs(currentDate.getHours().toString() -
+                    this.state.timeStartCNC1?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(11, 13);
+                    })) : Math.abs(currentDate.getHours().toString() -
+                    this.state.timeStartCNC2?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(11, 13);
+                    }))}h
+                    {(Type === "stonecut") ? Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartCNC1?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })) : Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartCNC2?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })) }
+                  
+                </h2>
+                <h6>
+                  Start:{" "}
+                  <b>
+                    {Type === "stonecut"
+                      ? this.state.timeStartCNC1?.map(({ DateTime }) => {
+                          return DateTime.toString().substring(11, 16);
+                        })
+                      : this.state.timeStartCNC2?.map(({ DateTime }) => {
+                          return DateTime.toString().substring(11, 16);
+                        })}
+                  </b>
                 </h6>
-                <h6 style={{ color: "#333" }}>
-                  {DateTime.toString().substring(11, 16)}
-                </h6>
-                <h6>Última leitura </h6>
               </Card>
               <Card
                 eventkey={1}
                 onClick={() => this.handleSelectItem(1, "pecas")}
                 className={
-                  "card-box-header col-lg col-sm-8 col-md-8" +
+                  "card-box-header col-lg col-md-6 col-sm-12" +
                   (Production === 100 ? " blinkDone" : " ")
+                  
                 }
+                style={{maxWidth:"100%", minWidth:"320px", float:"left"}}
               >
                 <h6>Produção</h6>
                 <span className="badgeWork">
                   <Badge bg="danger" style={{ fontWeight: "lighter" }}>
                     #
                     {Type === "stonecut"
-                      ? this.state.production1.length
+                      ? this.calcJob(this.state.production1).length
                       : this.state.production2.length}
                   </Badge>
                 </span>
@@ -480,7 +530,7 @@ class Dashboard extends Component {
               >
                 <h6>Alarme</h6>
                 {Alarm.length > 6 ? (
-                  <h6 style={{ color: "#333", fontSize: 10}}>{Alarm}</h6>
+                  <h5 style={{ color: "#333", fontSize: 10 }}>{Alarm}</h5>
                 ) : (
                   <h1 style={{ color: "#333" }}>{Alarm}</h1>
                 )}
@@ -543,10 +593,25 @@ class Dashboard extends Component {
     // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
     return (
       <>
-        {this.renderMachine(this.state.machine?.slice(1))}
-        <p></p>
+        {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
+          DateTime: new Date(),
+          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
+          Type: "STONECUT",
+          Job: 0,
+          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
+          Production: 0,
+          Tension: 0
+        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
 
-        {this.renderMachine(this.state.machine1)}
+        {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
+          DateTime: new Date(),
+          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
+          Type: "STONECUT45MILL",
+          Job: 0,
+          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
+          Production: 0,
+          Tension: 0
+        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}
       </>
     );
   }

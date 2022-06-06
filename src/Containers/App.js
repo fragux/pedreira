@@ -17,7 +17,7 @@ class App extends React.Component {
   render() {
     const state = this.state;
     return (
-      <div className="container_login mt-5">
+     
         <Navbar
           header_h2__bold={state.header_h2__bold}
           header_title={state.header_title}
@@ -25,7 +25,7 @@ class App extends React.Component {
           main_title={state.main_title}
           main_info={state.main_info}
         />
-      </div>
+    
     );
   }
 }

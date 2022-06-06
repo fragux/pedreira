@@ -121,7 +121,7 @@ renderTimeTotal(parentData){
             currentMode={this.state.timePeriod}
           />
         );
-        case "teste":
+        default:
           return (
             <CNC
               realTime={this.state.realTime}
@@ -130,7 +130,7 @@ renderTimeTotal(parentData){
               currentMode={this.state.timePeriod}
             />
           ); 
-
+/*
       default:
         return (
           <DashboardGeral
@@ -139,7 +139,7 @@ renderTimeTotal(parentData){
             parentCallback={this.handleTimeback}
             currentMode={this.state.timePeriod}
           />
-        );
+        );*/
     }
   }
 
@@ -153,15 +153,21 @@ renderTimeTotal(parentData){
             <Sidebar sidebarCallback={this.handleCallback} />
           </div>
           <div id="main">
-            <header className="App-header">
+            <div className="container-top col-12 m-0">
+            <header className="App-header-m">
+              <Header bigParentCallback={this.handleCallback} />
               <SubHeader
                 timeTotal={this.state.timeTotal}
                 timePeriod={this.handleTimePeriod}
                 realTime={this.handleRealTime}
               />
-              <Header bigParentCallback={this.handleCallback} />
             </header>
+
+            </div>
+            <div className="container-body">
+
             {this.handdleDashboard(this.state.machine)}
+            </div>
           </div>
         </div>
       </div>

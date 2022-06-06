@@ -10,6 +10,19 @@
     50% { background: #fea32c; } 
  }
 
+ @keyframes blinkOffLine { 
+   50% { color: #ff0000; } 
+}
+
+ .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 2rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+
+}
+
  .blink{ /*or other element you want*/
      animation: blink .5s step-end infinite alternate;
      border: 3px solid
@@ -41,6 +54,10 @@
     margin-right: 1.5rem;
     margin-bottom: 5rem;
 
+  }
+
+  .blinkOffLine{
+   animation: blinkOffLine .5s step-end infinite alternate;
   }
 
   

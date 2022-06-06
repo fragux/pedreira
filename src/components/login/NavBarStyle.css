@@ -12,10 +12,12 @@
 .main_box_login{
     display: flex;
     justify-content: center;
+    place-items: center;
     align-items: center;
     flex-direction: column;
     height: 80vh;
-    margin-left: -5rem;
+    margin-left: 0rem;
+    margin-top: 8vh;
     
   }
   
