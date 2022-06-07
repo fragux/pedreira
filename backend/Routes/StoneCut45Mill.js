@@ -14,8 +14,10 @@ const db = mysql.createPool({
     database: 'db',
 })
 
-router.get('/serra3500', (req, res) =>{
-    const sqlSelect = "SELECT * FROM serra3500 ";
+//endpoint para CNC - STONECUT45MILL
+
+router.get('/machine/cnc2', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` ";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -26,8 +28,11 @@ router.get('/serra3500', (req, res) =>{
         }
     })
 });
-router.get('/serra3500/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM serra3500 ORDER BY data_hora DESC LIMIT 10";
+
+
+
+router.get('/machine/cnc2/last', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` ORDER BY `DateTime` DESC LIMIT 1";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -38,8 +43,9 @@ router.get('/serra3500/last', (req, res) =>{
         }
     })
 });
-router.get('/serra3500/dia', (req, res) =>{
-    const sqlSelect = "SELECT * FROM serra3500 ORDER BY data_hora DESC LIMIT 8";
+
+router.get('/machine/cnc2/job', (req, res) =>{
+    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production = 0";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -50,8 +56,9 @@ router.get('/serra3500/dia', (req, res) =>{
         }
     })
 });
-router.get('/serra3500/semana', (req, res) =>{
-    const sqlSelect = "SELECT * FROM serra3500 ORDER BY data_hora DESC LIMIT 16";
+
+router.get('/machine/cnc2/start', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Tension >20 Limit 1";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -62,17 +69,6 @@ router.get('/serra3500/semana', (req, res) =>{
         }
     })
 });
-router.get('/serra3500/semana', (req, res) =>{
-    const sqlSelect = "SELECT * FROM serra3500 ORDER BY data_hora DESC LIMIT 30";
-    db.query(sqlSelect, (err, result) =>{
-        if (err){
-            console.log(err);
-        }
-        else {
-            res.send(result);
-            console.log(result);
-        }
-    })
-});
+
 
 module.exports = (router);

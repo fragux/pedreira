@@ -38,8 +38,8 @@ class Dashboard extends Component {
       isClicked: false,
       currentItem: "",
       key: 1,
-      machine: [],
-      machine1: [],
+      lousada: [],
+      minorça: [],
       timeTotal: "",
       timePeriod: this.props.currentMode,
       corrente: "",
@@ -68,42 +68,31 @@ class Dashboard extends Component {
     this.props.parentCallback(this.state.timeTotal);
     this.handleResponse = this.handleResponse.bind(this);
     this.renderMachine = this.renderMachine.bind(this);
-    this.calcJob = this.calcJob.bind(this);
-    this.convertXmlToJson = this.convertXmlToJson.bind(this);
+    this.calcStart = this.calcStart.bind(this);
+    //this.convertXmlToJson = this.convertXmlToJson.bind(this);
     this.calcIsOffLine = this.calcIsOffLine.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
 
   getData() {
-    axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
+    axios.get("http://localhost:3001/machine/lousada/last").then((response) => {
       console.log(
-        "Get DATA from function getData() and setInterval: ",
+        "Get DATA from LOUSADA: ",
         response.data
       );
-      this.setState({ machine: response.data });
+      this.setState({ lousada: response.data });
     });
-    axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
+    axios.get("http://localhost:3001/machine/minorça/last").then((response) => {
       console.log(
-        "Get DATA from function getData() and setInterval: ",
+        "Get DATA from MINORÇA: ",
         response.data
       );
-      this.setState({ machine1: response.data });
+      this.setState({ minorça: response.data });
     });
 
-    axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
-      this.setState({ production1: response.data });
-    });
-    axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
-      this.setState({ production2: response.data });
-    });
-    axios.get("http://localhost:3001/machine/cnc1/start").then((response) => {
-      this.setState({ timeStartCNC1: response.data });
-    });
-    axios.get("http://localhost:3001/machine/cnc2/start").then((response) => {
-      this.setState({ timeStartCNC2: response.data });
-    });
-    this.calcJob();
-    this.convertXmlToJson(XML);
+    
+    this.calcStart();
+    
     this.calcIsOffLine();
     
   }
@@ -144,26 +133,7 @@ class Dashboard extends Component {
     return result;
   }
 
-  convertXmlToJson = (xmlString) => {
-    axios
-      .get(xmlString, {
-        "Content-Type": "application/xml; charset=utf-8",
-      })
-      .then((response) => {
-        //console.log('Your xml file as string', response.data);
-        this.setState({ resultXML: response.data });
-      });
-    var jsonData = new XMLParser().parseFromString(this.state.resultXML);
-    console.log("PARSER - TESTE -> ", jsonData);
-    //var jsonData = new XMLParser().parseFromString(XMLDATA);
-    /*for (const result of XMLDATA.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
-        const key = result[1] || result[3];
-        const value = result[2] && this.convertXmlToJson(result[2]); //recusrion
-        jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
-    }*/
-    // return jsonData;
-  };
-
+  
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
     console.log("Tempo total callback", this.state.timeTotal);
@@ -367,7 +337,7 @@ class Dashboard extends Component {
     });
   };
 
-  calcJob = (array) => {
+  calcStart = (array) => {
       const initialValue = 0;
       var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
     );
@@ -379,14 +349,14 @@ class Dashboard extends Component {
   renderMachine = (machine) => {
     let currentDate = new Date();
     return machine?.map(
-      ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
+      ({ DateTime, Alarm, Current, Start, CycleTime, TargetProduction, RealTimeProduction, Type }) => (
         <>
           <div className="container-dashboard-d ">
             <div className="row" eventkey={this.state.key}>
               <Card
                 className={
                   "card-box-header " +
-                  (Job === 4 || Job === 3 ? "blinkIdle" : "")
+                  (Start === 4 || Start === 3 ? "blinkIdle" : "")
                 }
                 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
                 onClick={() => this.handleSelectItem(1, "none")}
@@ -403,15 +373,15 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  { Job === 4  || Job === 3 ? "Standby" : Power}
+                  { Start === 4  || Start === 3 ? "Standby" : Current}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
                   className={
                     "spanc" +
-                    (Job === 1
+                    (Start === 1
                       ? " down"
-                      : Job === 4 || Job === 3
+                      : Start === 4 || Start === 3
                       ? " blink"
                       : " active")
                   }
@@ -462,7 +432,7 @@ class Dashboard extends Component {
                 onClick={() => this.handleSelectItem(1, "pecas")}
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
-                  (Production === 100 ? " blinkDone" : " ")
+                  (RealTimeProduction === 100 ? " blinkDone" : " ")
                   
                 }
                 style={{maxWidth:"100%", minWidth:"320px", float:"left"}}
@@ -471,24 +441,22 @@ class Dashboard extends Component {
                 <span className="badgeWork">
                   <Badge bg="danger" style={{ fontWeight: "lighter" }}>
                     #
-                    {Type === "stonecut"
-                      ? this.calcJob(this.state.production1).length
-                      : this.state.production2.length}
+                    {CycleTime}
                   </Badge>
                 </span>
-                <h1 style={{ color: "#333" }}>{Production}%</h1>
+                <h1 style={{ color: "#333" }}>{RealTimeProduction}%</h1>
                 <h6>
                   <ProgressBar
                     animated
                     striped
                     variant={
-                      Production >= 90
+                        RealTimeProduction >= 90
                         ? "success"
-                        : Production <= 30
+                        : RealTimeProduction <= 30
                         ? "danger"
                         : "warning"
                     }
-                    now={Production}
+                    now={RealTimeProduction}
                     //label={`${Production}%`}
                     style={{ height: "26px" }}
                   />
@@ -504,7 +472,7 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{Job}</h1>
+                <h1 style={{ color: "#333" }}>{Start}</h1>
                 <h6>Executado</h6>
               </Card>
               <Card
@@ -515,11 +483,11 @@ class Dashboard extends Component {
                   (this.currentItem === "agua" ? " active" : "")
                 }
               >
-                <h6>Tensão</h6>
+                <h6>Corrente</h6>
                 <h1 style={{ color: "#333" }}>
-                  {Tension === null ? 0 : parseFloat(Tension).toFixed(0)}
+                  {Current === null ? 0 : parseFloat(Current).toFixed(0)}
                 </h1>
-                <h6>Volts</h6>
+                <h6>Amperes</h6>
               </Card>
               <Card
                 eventkey={5}
@@ -593,25 +561,25 @@ class Dashboard extends Component {
     // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
     return (
       <>
-        {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
+        {(this.calcIsOffLine(this.state.lousada))? this.renderMachine([{
           DateTime: new Date(),
           Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          Production: 0,
-          Tension: 0
-        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
+          Type: "LOUSADA",
+          Start: 0,
+          Current: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
+          RealTimeProduction: 0,
+          CycleTime: 0
+        }]) : this.renderMachine({...this.state.lousada, ...{['Type']:"LOUSADA"}} )/*this.renderMachine(this.state.machine?.slice(1))*/}      
 
-        {(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
+        {(this.calcIsOffLine(this.state.minorça))? this.renderMachine([{
           DateTime: new Date(),
           Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT45MILL",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
-          Production: 0,
-          Tension: 0
-        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}
+          Type: "MINORÇA",
+          Start: 0,
+          Current: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
+          RealTimeProduction: 0,
+          CycleTime: 0
+        }]) : this.renderMachine({...this.state.minorça, ...{['Type']:"MINORÇA"}})/*this.renderMachine(this.state.machine?.slice(1))*/}
       </>
     );
   }

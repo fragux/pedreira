@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import Dashboard from "./DashBoardComponent";
 import DashboardGeral from "./DashBoardGeral";
 import CNC from "./CncComponent";
+import LousadaMinorca from "./LousadaMinorcaComponent";
 import "./DashBoardComponent.css";
 import Sidebar from "./Sidebar";
 
@@ -123,12 +124,19 @@ renderTimeTotal(parentData){
         );
         default:
           return (
-            <CNC
+           <> <CNC
               realTime={this.state.realTime}
               selectedMaquina={this.state.machine}
               parentCallback={this.handleTimeback}
               currentMode={this.state.timePeriod}
             />
+            <LousadaMinorca 
+            realTime={this.state.realTime}
+            selectedMaquina={this.state.machine}
+            parentCallback={this.handleTimeback}
+            currentMode={this.state.timePeriod}
+            />
+            </>
           ); 
 /*
       default:

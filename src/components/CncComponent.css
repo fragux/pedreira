@@ -60,4 +60,14 @@
    animation: blinkOffLine .5s step-end infinite alternate;
   }
 
+  .card-box-header::before {
+   transform: none;
+   border: none;
+  
+ }
+ 
+ .card-box-header:hover {
+   transform: none;
+   border: none;
+ }
   
