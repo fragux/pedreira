@@ -10,8 +10,16 @@
     50% { background: #fea32c; } 
  }
 
+ @keyframes blinkStop { 
+   50% { color: #c7c0c0; } 
+}
+
  @keyframes blinkOffLine { 
    50% { color: #ff0000; } 
+}
+
+@keyframes blinkPlay { 
+   50% { color: #12ac0d; } 
 }
 
  .row {
@@ -22,6 +30,7 @@
     margin-top: 1rem;
 
 }
+
 
  .blink{ /*or other element you want*/
      animation: blink .5s step-end infinite alternate;
@@ -36,6 +45,10 @@
 .blinkIdle{ /*or other element you want*/
     animation: blinkIdle .5s step-end infinite alternate;
     border: 3px solid
+}
+
+.blinkPlay{ /*or other element you want*/
+   animation: blinkPlay .5s step-end infinite alternate;
 }
 
  .card-box-header-d {
@@ -58,6 +71,10 @@
 
   .blinkOffLine{
    animation: blinkOffLine .5s step-end infinite alternate;
+  }
+
+  .blinkStop{
+   animation: blinkStop .5s step-end infinite alternate;
   }
 
   .card-box-header::before {

@@ -22,7 +22,9 @@ import "./CncComponent.css";
 import XML from "../data/relatorio.xml";
 import XMLParser from "react-xml-parser";
 import * as HiIcons from "react-icons/hi";
-import * as MdIcons from "react-icons/md"
+import * as MdIcons from "react-icons/md";
+import * as AiIcons from "react-icons/ai";
+import * as BiIcons from "react-icons/bi";
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
@@ -56,8 +58,8 @@ class Dashboard extends Component {
       standBy: false,
       isOffline: false,
       resultXML: "",
-      timeStartCNC1: [],
-      timeStartCNC2: [],
+      timeStartLousada: [],
+      timeStartMinorca: [],
     };
     this.getData = this.getData.bind(this);
     this.renderSwitch = this.renderSwitch.bind(this);
@@ -74,20 +76,27 @@ class Dashboard extends Component {
     console.log("Botão real time: ---->", this.props.realTime);
   }
 
-  getData() {
-    axios.get("http://localhost:3001/machine/lousada/last").then((response) => {
+ async getData() {
+    await axios.get("http://localhost:3001/machine/lousada/last").then((response) => {
       console.log(
         "Get DATA from LOUSADA: ",
         response.data
       );
       this.setState({ lousada: response.data });
     });
-    axios.get("http://localhost:3001/machine/minorça/last").then((response) => {
+    await axios.get("http://localhost:3001/machine/minorca/last").then((response) => {
       console.log(
         "Get DATA from MINORÇA: ",
         response.data
       );
       this.setState({ minorça: response.data });
+    });
+
+    await axios.get("http://localhost:3001/machine/lousada/start").then((response) => {
+      this.setState({ timeStartLousada: response.data });
+    });
+    await axios.get("http://localhost:3001/machine/minorca/start").then((response) => {
+      this.setState({ timeStartMinorca: response.data });
     });
 
     
@@ -97,8 +106,9 @@ class Dashboard extends Component {
     
   }
 
-  componentDidMount() {
+ async componentDidMount() {
     this.getData();
+    this.render();
     setInterval(() => {
       this.getData();
       this.render();
@@ -110,7 +120,7 @@ class Dashboard extends Component {
             //production: Production
           };
         });
-    }, 100000);
+    }, 240000);
   }
 
   calcIsOffLine = (array) => {
@@ -245,6 +255,14 @@ class Dashboard extends Component {
         return;
     }
   }
+  calcWork = (value) => {
+    if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"} className="blinkStop"/>
+    if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
+    if (value === 2) return <AiIcons.AiOutlinePauseCircle size={50} color={"blue"}/> 
+    if (value === 3) return <MdIcons.MdOutlineModeStandby size={50} color={"orange"}/>  
+    else if (value === 4) return <BiIcons.BiError size={20}/> 
+  }
+
   handleSelectedMaquina(param) {
     switch (param) {
       case "MONOFIO NFC 2000":
@@ -348,6 +366,7 @@ class Dashboard extends Component {
 
   renderMachine = (machine) => {
     let currentDate = new Date();
+    console.log("Teste para minorça e lousada ", machine);
     return machine?.map(
       ({ DateTime, Alarm, Current, Start, CycleTime, TargetProduction, RealTimeProduction, Type }) => (
         <>
@@ -373,7 +392,7 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  { Start === 4  || Start === 3 ? "Standby" : Current}
+                  { (Start === 0  )? "Standby" : Start === 1 ? "On": "Off"}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
@@ -381,9 +400,9 @@ class Dashboard extends Component {
                     "spanc" +
                     (Start === 1
                       ? " down"
-                      : Start === 4 || Start === 3
-                      ? " blink"
-                      : " active")
+                      : Start === 0
+                      ? " active"
+                      : " down")
                   }
                 ></span>
               </Card>
@@ -398,30 +417,33 @@ class Dashboard extends Component {
                 <h6>Tempo Ligada</h6>
 
                 <h2 style={{ color: "#333" }}>
-                  {(Type === "stonecut") ? Math.abs(currentDate.getHours().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
+                  {(Type === "LOUSADA") ? Math.abs(currentDate.getHours().toString() -
+                    this.state.timeStartLousada?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
                     })) : Math.abs(currentDate.getHours().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
+                    this.state.timeStartMinorca?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
                     }))}h
-                    {(Type === "stonecut") ? Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
+                    {(Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartMinorca?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })) : Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
+                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartMinorca?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })) }
+                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartMinorca?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })).toString()}
                   
                 </h2>
                 <h6>
                   Start:{" "}
                   <b>
-                    {Type === "stonecut"
-                      ? this.state.timeStartCNC1?.map(({ DateTime }) => {
+                    {Type === "LOUSADA"
+                      ? this.state.timeStartLousada?.map(({ DateTime }) => {
                           return DateTime.toString().substring(11, 16);
                         })
-                      : this.state.timeStartCNC2?.map(({ DateTime }) => {
+                      : this.state.timeStartMinorca?.map(({ DateTime }) => {
                           return DateTime.toString().substring(11, 16);
                         })}
                   </b>
@@ -439,14 +461,13 @@ class Dashboard extends Component {
               >
                 <h6>Produção</h6>
                 <span className="badgeWork">
-                  <Badge bg="danger" style={{ fontWeight: "lighter" }}>
-                    #
-                    {CycleTime}
-                  </Badge>
+                  {(Start!== 0 ) ? <Badge bg="success" style={{ fontWeight: "lighter" }}>
+                    {` ${CycleTime} min`}
+                  </Badge>: ""}  
                 </span>
-                <h1 style={{ color: "#333" }}>{RealTimeProduction}%</h1>
+                <h1 style={{ color: "#333" }}>{RealTimeProduction}/{TargetProduction}</h1>
                 <h6>
-                  <ProgressBar
+                 {/* <ProgressBar
                     animated
                     striped
                     variant={
@@ -459,7 +480,7 @@ class Dashboard extends Component {
                     now={RealTimeProduction}
                     //label={`${Production}%`}
                     style={{ height: "26px" }}
-                  />
+                  />*/}
                 </h6>
               </Card>
 
@@ -472,8 +493,8 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{Start}</h1>
-                <h6>Executado</h6>
+                <h1 style={{ color: "#333" }}>{this.calcWork(Start)}</h1>
+                <h6>Estado</h6>
               </Card>
               <Card
                 eventkey={4}
@@ -497,16 +518,16 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Alarme</h6>
-                {Alarm.length > 6 ? (
+                {Alarm> 6 ? (
                   <h5 style={{ color: "#333", fontSize: 10 }}>{Alarm}</h5>
                 ) : (
-                  <h1 style={{ color: "#333" }}>{Alarm}</h1>
+                  <h1 style={{ color: "#333" }}>{Start === 0 ? "Stop": Alarm}</h1>
                 )}
 
                 <h6>Tipo</h6>
                 <span
                   className={
-                    "spanc" + (Alarm !== "Clear" ? " active" : " down")
+                    "spanc" + (Alarm !== "Clear" ? " down" : Start===1 ? " down": " active")
                   }
                 ></span>
               </Card>
@@ -569,7 +590,7 @@ class Dashboard extends Component {
           Current: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
           RealTimeProduction: 0,
           CycleTime: 0
-        }]) : this.renderMachine({...this.state.lousada, ...{['Type']:"LOUSADA"}} )/*this.renderMachine(this.state.machine?.slice(1))*/}      
+        }]) : this.renderMachine([{...this.state.lousada[0], ...{['Type']:"LOUSADA"} , ...{['Alarm']:"Clear"}} ])/*this.renderMachine(this.state.machine?.slice(1))*/}      
 
         {(this.calcIsOffLine(this.state.minorça))? this.renderMachine([{
           DateTime: new Date(),
@@ -579,7 +600,7 @@ class Dashboard extends Component {
           Current: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
           RealTimeProduction: 0,
           CycleTime: 0
-        }]) : this.renderMachine({...this.state.minorça, ...{['Type']:"MINORÇA"}})/*this.renderMachine(this.state.machine?.slice(1))*/}
+        }]) : this.renderMachine([{...this.state.minorça[0], ...{['Type']:"MINORÇA"}, ...{['Alarm']: "Clear"}}])/*this.renderMachine(this.state.machine?.slice(1))*/}
       </>
     );
   }

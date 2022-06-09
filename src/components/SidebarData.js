@@ -4,6 +4,7 @@ import * as GrIcons from "react-icons/gr";
 import * as GiIcons from "react-icons/gi";
 import * as RiIcons from "react-icons/ri";
 import * as IoIcons from "react-icons/io";
+import * as TbIcons from "react-icons/tb";
 
 export const SidebarData = [
   {
@@ -45,5 +46,15 @@ export const SidebarData = [
     title: "LOUSADA XT100",
     icon: <AiIcons.AiOutlineFundView size={20} />,
     path: "/lousadat100",
+  },
+  {
+    title: "STONECUT",
+    icon: <GiIcons.GiBubblingBeam size={20} />,
+    path: "/stonecut",
+  },
+  {
+    title: "STONECUT45MILL",
+    icon: <TbIcons.TbWindmill size={20} />,
+    path: "/stonecut45mill",
   },
 ];

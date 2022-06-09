@@ -31,15 +31,9 @@ class Header extends Component {
     return (
       <div className="container-header">
         <div className="row-header">
-          <h4>
-            Dashboard
-           
-          </h4>
-          <DropdownMaquina parentCallback={this.handleCallback} />
+          <h4>Dashboard</h4>
+          <h4><DropdownMaquina parentCallback={this.handleCallback} /></h4>
         </div>
-        <h6 className="selectedmaquina">
-          <i>{name}</i>
-        </h6>
       </div>
     );
   }

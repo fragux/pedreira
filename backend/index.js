@@ -9,6 +9,10 @@ const MinorcaRoute = require("./Routes/MinorcaRoute");
 const MonofioRoute = require("./Routes/MonofioRoute");
 const Serra3500 = require("./Routes/Serra3500");
 const StoneCut45Mill = require('./Routes/StoneCut45Mill');
+const Alarms = require('./Routes/AlarmSettings');
+const AlarmSettings = require("./Routes/AlarmSettings");
+
+
 const client = require("twilio")(
   "AC30d90c932ea37c30c67b90ed466a24ad",
   "d2994d9914dcabe2dd60190c96fb4b0d"
@@ -32,6 +36,7 @@ app.use("/", Lousada);
 app.use("/", MinorcaRoute);
 app.use("/", MonofioRoute);
 app.use("/", Serra3500);
+app.use("/", AlarmSettings);
 
 app.post("/sendnotification", (req, res) => {
   const data = req.body.data;

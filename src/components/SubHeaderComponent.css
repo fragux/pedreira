@@ -1,8 +1,7 @@
 .container-subheader {
   margin-top: 0rem;
   background: #bbbaba;
-  min-height: 10vh;
-  max-height: 10vh;
+  
   display: flex;
   flex-direction: column;
   text-align: right;
@@ -13,9 +12,8 @@
   margin-bottom:0px;
   margin-top: 1rem;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, .15);
-  z-index: -15;
   padding-top: 1rem;
-  place-items:middle;
+ 
 }
 
 .row-subheader {

@@ -13,7 +13,7 @@ import {
 const DropdownMaquina = (props) => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
-  const [option, setOption] = React.useState();
+  const [option, setOption] = React.useState("Máquina");
 
   function handleChange(event) {
     setOption(event.target.value);
@@ -28,7 +28,7 @@ const DropdownMaquina = (props) => {
         data-toggle="dropdown"
         aria-expanded={dropdownOpen}
       >
-        Máquina
+        {option}
       </DropdownToggle>
       <DropdownMenu name="option" className="dropdownlist" container="body">
         <DropdownItem
@@ -62,9 +62,9 @@ const DropdownMaquina = (props) => {
         <DropdownItem
           className="dropdownitem"
           onClick={handleChange}
-          value="teste"
+          value="VISTA GERAL"
         >
-          Maquina para Teste SQL
+          VISTA GERAL
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

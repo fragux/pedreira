@@ -1,7 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const app = express();
 const mysql = require('mysql');
 const router = express.Router();
 
@@ -27,18 +24,7 @@ router.get('/minorca', (req, res) =>{
     })
 });
 
-router.get('/minorca/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM minorca ORDER BY data_hora DESC LIMIT 10";
-    db.query(sqlSelect, (err, result) =>{
-        if (err){
-            console.log(err);
-        }
-        else {
-            res.send(result);
-            console.log(result);
-        }
-    })
-});
+
 
 router.get('/minorca/dia', (req, res) =>{
     const sqlSelect = "SELECT * FROM minorca ORDER BY data_hora DESC LIMIT 8";
@@ -81,6 +67,19 @@ router.get('/minorca/mes', (req, res) =>{
 
 router.get('/machine/minorca/last', (req, res) =>{
     const sqlSelect = "SELECT * FROM `Minorça` ORDER BY `DateTime` DESC LIMIT 1";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+router.get('/machine/minorca/start', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `Lousada` WHERE DATE(DateTime) = CURDATE() AND Start = 1 Limit 1";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

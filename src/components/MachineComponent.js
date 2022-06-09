@@ -6,6 +6,7 @@ import Dashboard from "./DashBoardComponent";
 import DashboardGeral from "./DashBoardGeral";
 import CNC from "./CncComponent";
 import LousadaMinorca from "./LousadaMinorcaComponent";
+import CNCDashBoard from "./CncDashboardComponent";
 import "./DashBoardComponent.css";
 import Sidebar from "./Sidebar";
 
@@ -18,7 +19,7 @@ class Machine extends Component {
       chartData: [],
       timeTotal: "",
       timePeriod: "",
-      api:"",
+      api: "",
       endpoint: "",
       realTime: false,
     };
@@ -122,23 +123,35 @@ renderTimeTotal(parentData){
             currentMode={this.state.timePeriod}
           />
         );
-        default:
-          return (
-           <> <CNC
+        case "STONECUT":
+      case "STONECUT45MILL":
+        return (
+          <CNCDashBoard
+            realTime={this.state.realTime}
+            selectedMaquina={this.state.machine}
+            parentCallback={this.handleTimeback}
+            currentMode={this.state.timePeriod}
+          />
+        );
+      default:
+        return (
+          <>
+            {" "}
+            <CNC
               realTime={this.state.realTime}
               selectedMaquina={this.state.machine}
               parentCallback={this.handleTimeback}
               currentMode={this.state.timePeriod}
             />
-            <LousadaMinorca 
-            realTime={this.state.realTime}
-            selectedMaquina={this.state.machine}
-            parentCallback={this.handleTimeback}
-            currentMode={this.state.timePeriod}
+            <LousadaMinorca
+              realTime={this.state.realTime}
+              selectedMaquina={this.state.machine}
+              parentCallback={this.handleTimeback}
+              currentMode={this.state.timePeriod}
             />
-            </>
-          ); 
-/*
+          </>
+        );
+      /*
       default:
         return (
           <DashboardGeral
@@ -162,19 +175,17 @@ renderTimeTotal(parentData){
           </div>
           <div id="main">
             <div className="container-top col-12 m-0">
-            <header className="App-header-m">
-              <Header bigParentCallback={this.handleCallback} />
-              <SubHeader
-                timeTotal={this.state.timeTotal}
-                timePeriod={this.handleTimePeriod}
-                realTime={this.handleRealTime}
-              />
-            </header>
-
+              <header className="App-header-m">
+                <Header bigParentCallback={this.handleCallback} />
+                <SubHeader
+                  timeTotal={this.state.timeTotal}
+                  timePeriod={this.handleTimePeriod}
+                  realTime={this.handleRealTime}
+                />
+              </header>
             </div>
             <div className="container-body">
-
-            {this.handdleDashboard(this.state.machine)}
+              {this.handdleDashboard(this.state.machine)}
             </div>
           </div>
         </div>

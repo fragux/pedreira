@@ -35,7 +35,8 @@ const Sidebar = (props) => {
             );
           })}
         </ul>
-        <ul className="sidebarList-exit">
+        <div className="sidebar-gap"></div>
+        <div className="sidebarList-exit">
           <div className="exit">
             <li
               onClick={() => {
@@ -45,8 +46,9 @@ const Sidebar = (props) => {
               <AiIcons.AiOutlinePoweroff size={26} />
             </li>
           </div>
-        </ul>
-        Logout
+          <p>Logout</p>
+          
+        </div>
       </div>
     </div>
   );

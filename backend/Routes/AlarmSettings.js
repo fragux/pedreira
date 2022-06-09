@@ -11,11 +11,8 @@ const db = mysql.createPool({
     database: 'db',
 })
 
-
-
-
-router.get('/machine/lousada/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `Lousada` ORDER BY `DateTime` DESC LIMIT 1";
+router.get('/alarms', (req, res) =>{
+    const sqlSelect = "SELECT * FROM Alarms";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -27,8 +24,8 @@ router.get('/machine/lousada/last', (req, res) =>{
     })
 });
 
-router.get('/machine/lousada/start', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `Lousada` WHERE DATE(DateTime) = CURDATE() AND Start = 1 Limit 1";    
+router.get('/alarms/minorca', (req, res) =>{
+    const sqlSelect = "SELECT * FROM MinorçaAlarms";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -39,9 +36,18 @@ router.get('/machine/lousada/start', (req, res) =>{
         }
     })
 });
-
+router.get('/alarms/lousada', (req, res) =>{
+    const sqlSelect = "SELECT * FROM LousadaAlarms";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
 
 
 module.exports = (router);
-
-

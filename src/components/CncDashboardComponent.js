@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 //import { Media } from 'reactstrap';
-import { ProgressBar, Badge } from "react-bootstrap";
 import {
   Card,
   /* CardTitle,
   CardBody,
   CardText*/
 } from "reactstrap";
+import { ProgressBar, Badge } from "react-bootstrap";
 import { MACHINE } from "../data/machine";
 import { LOUSADA } from "../data/maquina";
 import { DEFAULT } from "../data/default";
@@ -18,15 +18,6 @@ import MyChart from "./ChartComponent";
 import "./DashBoardComponent.css";
 import axios from "axios";
 import Api from "twilio/lib/rest/Api";
-import "./CncComponent.css";
-import XML from "../data/relatorio.xml";
-import XMLParser from "react-xml-parser";
-import * as HiIcons from "react-icons/hi";
-import * as MdIcons from "react-icons/md";
-import * as AiIcons from "react-icons/ai";
-import * as BiIcons from "react-icons/bi";
-
-import { ApplicationInstance } from "twilio/lib/rest/api/v2010/account/application";
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
@@ -43,7 +34,6 @@ class Dashboard extends Component {
       currentItem: "",
       key: 1,
       machine: [],
-      machine1: [],
       timeTotal: "",
       timePeriod: this.props.currentMode,
       corrente: "",
@@ -51,7 +41,7 @@ class Dashboard extends Component {
       realTime: this.props.realTime,
       statusCorrente: false,
       statusVelocidade: false,
-      api: this.props.api,
+      api : this.props.api,
       endPoint: this.props.endPoint,
       production1: [],
       production2: [],
@@ -64,30 +54,26 @@ class Dashboard extends Component {
       timeStartCNC2: [],
     };
     this.getData = this.getData.bind(this);
-    
+    this.renderSwitch = this.renderSwitch.bind(this);
     this.handleSelectItem = this.handleSelectItem.bind(this);
-    //this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
-    //this.randomFunction = this.randomFunction.bind(this);
-    //this.randomFunctionKw = this.randomFunctionKw.bind(this);
+    this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
+    this.randomFunction = this.randomFunction.bind(this);
+    this.randomFunctionKw = this.randomFunctionKw.bind(this);
     this.props.parentCallback(this.state.timeTotal);
     this.handleResponse = this.handleResponse.bind(this);
-    this.renderMachine = this.renderMachine.bind(this);
-    this.calcJob = this.calcJob.bind(this);
-   // this.convertXmlToJson = this.convertXmlToJson.bind(this);
-    this.calcIsOffLine = this.calcIsOffLine.bind(this);
-    this.calcWork = this. calcWork.bind(this);
+    
     console.log("Botão real time: ---->", this.props.realTime);
   }
-
-  getData() {
-    axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
+  
+  async getData() {
+    await axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
       console.log(
         "Get DATA from function getData() and setInterval: ",
         response.data
       );
       this.setState({ machine: response.data });
     });
-    axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
+   await  axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
       console.log(
         "Get DATA from function getData() and setInterval: ",
         response.data
@@ -95,48 +81,22 @@ class Dashboard extends Component {
       this.setState({ machine1: response.data });
     });
 
-    axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
+    await axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
       this.setState({ production1: response.data });
     });
-    axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
+    await axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
       this.setState({ production2: response.data });
     });
-    axios.get("http://localhost:3001/machine/cnc1/start").then((response) => {
+    await axios.get("http://localhost:3001/machine/cnc1/start").then((response) => {
       this.setState({ timeStartCNC1: response.data });
     });
-    axios.get("http://localhost:3001/machine/cnc2/start").then((response) => {
+    await axios.get("http://localhost:3001/machine/cnc2/start").then((response) => {
       this.setState({ timeStartCNC2: response.data });
     });
     this.calcJob();
-    //this.convertXmlToJson(XML);
     this.calcIsOffLine();
     
   }
-
-  async componentDidMount() {
-    this.getData();
-    setInterval(() => {
-      this.getData();
-      this.render();
-      if (this.props.realTime)
-        this.setState((prevState) => {
-          return {
-            // corrente: this.randomFunctionCorrente(),
-            //velocidade: this.randomFunction(),
-            //production: Production
-          };
-        });
-    }, 240000);
-  }
-
-  calcWork = (value) => {
-    if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"}/>
-    if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
-    if (value === 3 || 4) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
-    if (value === 2) return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />  
-    //else if (value === 4) return <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
-  }
-
   calcIsOffLine = (array) => {
     let currentDate = new Date();
     let result = new Boolean();
@@ -156,26 +116,30 @@ class Dashboard extends Component {
     });
     return result;
   }
+  calcJob = (array) => {
+    const initialValue = 0;
+    var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
+  );
+      
+      console.log("Calculo dos trabalhos realizados: ", result);
+      return array;
+};
 
-  convertXmlToJson = (xmlString) => {
-    axios
-      .get(xmlString, {
-        "Content-Type": "application/xml; charset=utf-8",
-      })
-      .then((response) => {
-        //console.log('Your xml file as string', response.data);
-        this.setState({ resultXML: response.data });
-      });
-    var jsonData = new XMLParser().parseFromString(this.state.resultXML);
-    console.log("PARSER - TESTE -> ", jsonData);
-    //var jsonData = new XMLParser().parseFromString(XMLDATA);
-    /*for (const result of XMLDATA.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
-        const key = result[1] || result[3];
-        const value = result[2] && this.convertXmlToJson(result[2]); //recusrion
-        jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
-    }*/
-    // return jsonData;
-  };
+  async componentDidMount() {
+    this.getData();
+    setInterval(() => {
+      this.getData();
+      this.render();
+      if (this.props.realTime)
+        this.setState((prevState) => {
+          return {
+            // corrente: this.randomFunctionCorrente(),
+            //velocidade: this.randomFunction(),
+            //production: Production
+          };
+        });
+    }, 100000);
+  }
 
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
@@ -187,7 +151,16 @@ class Dashboard extends Component {
     console.log(maquinaValues.maquina);
   };
 
- 
+  renderSwitch(param) {
+    switch (param) {
+      case "MONOFIO NFC 2000":
+        return (this.state = { maquina: MACHINE });
+      case "LOUSADA 2000":
+        return (this.state = { maquina: LOUSADA });
+      default:
+        return (this.state = { maquina: DEFAULT });
+    }
+  }
 
   handleSelectItem(key, dashboardItem) {
     console.log("Dashboard button:", dashboardItem);
@@ -199,7 +172,7 @@ class Dashboard extends Component {
       case "MONOFIO NFC 2000":
         switch (this.props.currentMode) {
           case "dia":
-            this.setState({ endPoint: "/monofio/dia" });
+            this.setState({endPoint: "/monofio/dia"});
             axios.get("http://localhost:3001/monofio/dia").then((response) => {
               console.log("Get do item selecionado: ", response.data);
               this.setState({ machine: response.data });
@@ -371,18 +344,27 @@ class Dashboard extends Component {
     });
   };
 
-  calcJob = (array) => {
-      const initialValue = 0;
-      var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
+  render() {
+    const machine = this.state.machine;
+    // console.log("Array máquina para ser alterado o formato da data--->", machine);
+    if (this.props.realTime);
+    console.log(
+      "Período selecionado passado para dashboard: " + this.props.realTime
     );
-        
-        console.log("Calculo dos trabalhos realizados: ", result);
-        return array;
-  };
-
-  renderMachine = (machine) => {
+    //console.log("Array a ser passado da query para const machine: ", machine);
+    //console.log("Item Selecionado: ", this.state.currentItem);
+    const selectedMaquina = this.props.selectedMaquina;
+    // console.log("Máquina selecionada: ", this.props.selectedMaquina )
+    //this.handleSelectedMaquina(this.props.selectedMaquina);
+    const maquinaValues = this.renderSwitch(selectedMaquina);
+   
+    console.log("Valor tempo: ", this.state.timeTotal);
     let currentDate = new Date();
-    return machine?.map(
+    //console.log(maquinaValues[0]);
+    // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
+    return (
+      <>
+        {machine?.map(
       ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
         <>
           <div className="container-dashboard-d ">
@@ -439,25 +421,13 @@ class Dashboard extends Component {
                     this.state.timeStartCNC2?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
                     }))}h
-                    {(Type === "stonecut") ? (Math.abs(currentDate.getMinutes().toString() -
+                    {(Type === "stonecut") ? Math.abs(currentDate.getMinutes().toString() -
                     this.state.timeStartCNC1?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : (Math.abs(currentDate.getMinutes().toString() -
+                    })) : Math.abs(currentDate.getMinutes().toString() -
                     this.state.timeStartCNC2?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString()}
+                    })) }
                   
                 </h2>
                 <h6>
@@ -486,10 +456,10 @@ class Dashboard extends Component {
                 <h6>Produção</h6>
                 <span className="badgeWork">
                   <Badge bg="danger" style={{ fontWeight: "lighter" }}>
-                    {`# `}
+                    #
                     {Type === "stonecut"
-                      ? this.calcJob(this.state.production1).length
-                      : this.state.production2.length}
+                      ? this.calcJob(this.state.production1)
+                      : this.state.production2}
                   </Badge>
                 </span>
                 <h1 style={{ color: "#333" }}>{Production}%</h1>
@@ -520,8 +490,8 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{this.calcWork(Job)}</h1>
-                <h6>Estado</h6>
+                <h1 style={{ color: "#333" }}>{Job}</h1>
+                <h6>Executado</h6>
               </Card>
               <Card
                 eventkey={4}
@@ -560,34 +530,18 @@ class Dashboard extends Component {
               </Card>
             </div>
           </div>
-        </>
-      )
-    );
-  };
+        
 
-  render() {
-    
-    return (
-      <>
-        {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          Production: 0,
-          Tension: 0
-        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
-
-        {(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT45MILL",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
-          Production: 0,
-          Tension: 0
-        }]) : this.renderMachine(this.state.machine1)/*this.renderMachine(this.state.machine?.slice(1))*/}
+              <MyChart
+                maquina={maquinaValues}
+                machine={machine}
+                currentItemChart={this.currentItem}
+                selectedMaquina={selectedMaquina}
+                kWh={this.randomFunctionKw()}
+              />
+            </>
+          )
+        )}
       </>
     );
   }
