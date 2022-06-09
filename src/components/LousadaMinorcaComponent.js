@@ -73,40 +73,41 @@ class Dashboard extends Component {
     this.calcStart = this.calcStart.bind(this);
     //this.convertXmlToJson = this.convertXmlToJson.bind(this);
     this.calcIsOffLine = this.calcIsOffLine.bind(this);
+    this.calcTimeStart = this.calcTimeStart.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
 
- async getData() {
-    await axios.get("http://localhost:3001/machine/lousada/last").then((response) => {
-      console.log(
-        "Get DATA from LOUSADA: ",
-        response.data
-      );
-      this.setState({ lousada: response.data });
-    });
-    await axios.get("http://localhost:3001/machine/minorca/last").then((response) => {
-      console.log(
-        "Get DATA from MINORÇA: ",
-        response.data
-      );
-      this.setState({ minorça: response.data });
-    });
+  async getData() {
+    await axios
+      .get("http://localhost:3001/machine/lousada/last")
+      .then((response) => {
+        console.log("Get DATA from LOUSADA: ", response.data);
+        this.setState({ lousada: response.data });
+      });
+    await axios
+      .get("http://localhost:3001/machine/minorca/last")
+      .then((response) => {
+        console.log("Get DATA from MINORÇA: ", response.data);
+        this.setState({ minorça: response.data });
+      });
 
-    await axios.get("http://localhost:3001/machine/lousada/start").then((response) => {
-      this.setState({ timeStartLousada: response.data });
-    });
-    await axios.get("http://localhost:3001/machine/minorca/start").then((response) => {
-      this.setState({ timeStartMinorca: response.data });
-    });
+    await axios
+      .get("http://localhost:3001/machine/lousada/start")
+      .then((response) => {
+        this.setState({ timeStartLousada: response.data });
+      });
+    await axios
+      .get("http://localhost:3001/machine/minorca/start")
+      .then((response) => {
+        this.setState({ timeStartMinorca: response.data });
+      });
 
-    
     this.calcStart();
-    
+
     this.calcIsOffLine();
-    
   }
 
- async componentDidMount() {
+  async componentDidMount() {
     this.getData();
     this.render();
     setInterval(() => {
@@ -126,24 +127,48 @@ class Dashboard extends Component {
   calcIsOffLine = (array) => {
     let currentDate = new Date();
     let result = new Boolean();
-    array?.map(({DateTime}) => {
+    array?.map(({ DateTime }) => {
+      console.log(
+        Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13))
+      );
+      let diff = currentDate.getTime() - Date.parse(DateTime);
+      let vmindiff = Math.floor(diff / 1000 / 60); // in minutes
+      diff -= vmindiff * 1000 * 60;
+      console.log(
+        "Diferença das datas :",
+        currentDate.getTime() - Date.parse(DateTime),
+        "Convertida em minutos: ",
+        vmindiff
+      );
+      console.log(parseInt(DateTime.substring(8, 10)));
+      if (vmindiff > 10) {
+        //console.log("Teste para verificar se está offline: ", true);
+        result = true;
+      } else result = false;
+
+      //return this.setState({isOffline: true});
+    });
+    return result;
+  };
+
+  calcTimeStart = (array) => {
+    let currentDate = new Date();
+    let result;
+    result = array?.map(({DateTime}) => {
       console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
       diff -= vmindiff*1000*60
       console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
       console.log( parseInt(DateTime.substring(8,10)));
-      if(vmindiff > 10){
-        //console.log("Teste para verificar se está offline: ", true);
-        result = true;
-      }else result = false;
-
-      //return this.setState({isOffline: true});
+      return vmindiff; 
     });
-    return result;
+    let horas = (result/60).toFixed(0);
+    let minutos =  (((result/60) % 2 ) - 1) * 60;
+
+    return `${horas}h${minutos.toFixed(0)}`
   }
 
-  
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
     console.log("Tempo total callback", this.state.timeTotal);
@@ -256,12 +281,22 @@ class Dashboard extends Component {
     }
   }
   calcWork = (value) => {
-    if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"} className="blinkStop"/>
-    if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
-    if (value === 2) return <AiIcons.AiOutlinePauseCircle size={50} color={"blue"}/> 
-    if (value === 3) return <MdIcons.MdOutlineModeStandby size={50} color={"orange"}/>  
-    else if (value === 4) return <BiIcons.BiError size={20}/> 
-  }
+    if (value === 0)
+      return (
+        <AiIcons.AiOutlineStop
+          size={50}
+          color={"#e4181d"}
+          className="blinkStop"
+        />
+      );
+    if (value === 1)
+      return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />;
+    if (value === 2)
+      return <AiIcons.AiOutlinePauseCircle size={50} color={"blue"} />;
+    if (value === 3)
+      return <MdIcons.MdOutlineModeStandby size={50} color={"orange"} />;
+    else if (value === 4) return <BiIcons.BiError size={20} />;
+  };
 
   handleSelectedMaquina(param) {
     switch (param) {
@@ -356,19 +391,30 @@ class Dashboard extends Component {
   };
 
   calcStart = (array) => {
-      const initialValue = 0;
-      var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
+    const initialValue = 0;
+    var result = array?.reduce(
+      (previousData, currentData) => (previousData - currentData) % 5,
+      initialValue
     );
-        
-        console.log("Calculo dos trabalhos realizados: ", result);
-        return array;
+
+    console.log("Calculo dos trabalhos realizados: ", result);
+    return array;
   };
 
   renderMachine = (machine) => {
     let currentDate = new Date();
     console.log("Teste para minorça e lousada ", machine);
     return machine?.map(
-      ({ DateTime, Alarm, Current, Start, CycleTime, TargetProduction, RealTimeProduction, Type }) => (
+      ({
+        DateTime,
+        Alarm,
+        Current,
+        Start,
+        CycleTime,
+        TargetProduction,
+        RealTimeProduction,
+        Type,
+      }) => (
         <>
           <div className="container-dashboard-d ">
             <div className="row" eventkey={this.state.key}>
@@ -392,17 +438,13 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  { (Start === 0  )? "Standby" : Start === 1 ? "On": "Off"}
+                  {Start === 0 ? "Standby" : Start === 1 ? "On" : "Off"}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
                   className={
                     "spanc" +
-                    (Start === 1
-                      ? " down"
-                      : Start === 0
-                      ? " active"
-                      : " down")
+                    (Start === 1 ? " down" : Start === 0 ? " active" : " down")
                   }
                 ></span>
               </Card>
@@ -417,24 +459,41 @@ class Dashboard extends Component {
                 <h6>Tempo Ligada</h6>
 
                 <h2 style={{ color: "#333" }}>
-                  {(Type === "LOUSADA") ? Math.abs(currentDate.getHours().toString() -
-                    this.state.timeStartLousada?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(11, 13);
-                    })) : Math.abs(currentDate.getHours().toString() -
-                    this.state.timeStartMinorca?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(11, 13);
-                    }))}h
-                    {(Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartMinorca?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartMinorca?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartMinorca?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString()}
-                  
+                  {/*Type === "LOUSADA"
+                    ? Math.abs(
+                        currentDate.getHours().toString() -
+                          this.state.timeStartLousada?.map(({ DateTime }) => {
+                            return DateTime.toString().substring(11, 13);
+                          })
+                      )
+                    : Math.abs(
+                        currentDate.getHours().toString() -
+                          this.state.timeStartMinorca?.map(({ DateTime }) => {
+                            return DateTime.toString().substring(11, 13);
+                          })
+                      )}
+                  h
+                  {Math.abs(
+                    currentDate.getMinutes().toString() -
+                      this.state.timeStartMinorca?.map(({ DateTime }) => {
+                        return DateTime.toString().substring(14, 16);
+                      })
+                  ).toString().length === 1
+                    ? "0" +
+                      Math.abs(
+                        currentDate.getMinutes().toString() -
+                          this.state.timeStartMinorca?.map(({ DateTime }) => {
+                            return DateTime.toString().substring(14, 16);
+                          })
+                      ).toString()
+                    : Math.abs(
+                        currentDate.getMinutes().toString() -
+                          this.state.timeStartMinorca?.map(({ DateTime }) => {
+                            return DateTime.toString().substring(14, 16);
+                          })
+                        ).toString()*/}
+
+                {(Type === "LOUSADA") ? this.calcTimeStart(this.state.timeStartLousada) : this.calcTimeStart(this.state.timeStartMinorca) }
                 </h2>
                 <h6>
                   Start:{" "}
@@ -455,19 +514,26 @@ class Dashboard extends Component {
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
                   (RealTimeProduction === 100 ? " blinkDone" : " ")
-                  
                 }
-                style={{maxWidth:"100%", minWidth:"320px", float:"left"}}
+                style={{ maxWidth: "100%", minWidth: "320px", float: "left" }}
               >
                 <h6>Produção</h6>
                 <span className="badgeWork">
-                  {(Start!== 0 ) ? <Badge bg="success" style={{ fontWeight: "lighter" }}>
-                    {` ${CycleTime} min`}
-                  </Badge>: ""}  
+                  {Start !== 0 ? (
+                    <Badge bg="success" style={{ fontWeight: "lighter" }}>
+                      {` ${CycleTime} min`}
+                    </Badge>
+                  ) : (
+                    ""
+                  )}
                 </span>
-                <h1 style={{ color: "#333" }}>{RealTimeProduction}/{TargetProduction}</h1>
+                <h1 style={{ color: "#333" }}>
+                  {TargetProduction === 0
+                    ? `${RealTimeProduction}/${TargetProduction}`
+                    : `${RealTimeProduction}/${TargetProduction}`}
+                </h1>
                 <h6>
-                 {/* <ProgressBar
+                  {/* <ProgressBar
                     animated
                     striped
                     variant={
@@ -481,6 +547,14 @@ class Dashboard extends Component {
                     //label={`${Production}%`}
                     style={{ height: "26px" }}
                   />*/}
+                </h6>
+                <h6>
+                  Tipo:{" "}
+                  <b>
+                    {TargetProduction === 0
+                      ? `Moldura`
+                      : `Corte`}
+                  </b>
                 </h6>
               </Card>
 
@@ -518,16 +592,23 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Alarme</h6>
-                {Alarm> 6 ? (
+                {Alarm > 6 ? (
                   <h5 style={{ color: "#333", fontSize: 10 }}>{Alarm}</h5>
                 ) : (
-                  <h1 style={{ color: "#333" }}>{Start === 0 ? "Stop": Alarm}</h1>
+                  <h1 style={{ color: "#333" }}>
+                    {Start === 0 ? "Stop" : Alarm}
+                  </h1>
                 )}
 
                 <h6>Tipo</h6>
                 <span
                   className={
-                    "spanc" + (Alarm !== "Clear" ? " down" : Start===1 ? " down": " active")
+                    "spanc" +
+                    (Alarm !== "Clear"
+                      ? " down"
+                      : Start === 1
+                      ? " down"
+                      : " active")
                   }
                 ></span>
               </Card>
@@ -582,25 +663,69 @@ class Dashboard extends Component {
     // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
     return (
       <>
-        {(this.calcIsOffLine(this.state.lousada))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "LOUSADA",
-          Start: 0,
-          Current: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          RealTimeProduction: 0,
-          CycleTime: 0
-        }]) : this.renderMachine([{...this.state.lousada[0], ...{['Type']:"LOUSADA"} , ...{['Alarm']:"Clear"}} ])/*this.renderMachine(this.state.machine?.slice(1))*/}      
+        {
+          this.calcIsOffLine(this.state.lousada)
+            ? this.renderMachine([
+                {
+                  DateTime: new Date(),
+                  Alarm: (
+                    <HiIcons.HiOutlineStatusOffline
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  Type: "LOUSADA",
+                  Start: 0,
+                  Current: (
+                    <MdIcons.MdOutlinePowerOff
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  RealTimeProduction: 0,
+                  CycleTime: 0,
+                },
+              ])
+            : this.renderMachine([
+                {
+                  ...this.state.lousada[0],
+                  ...{ ["Type"]: "LOUSADA" },
+                  ...{ ["Alarm"]: "Clear" },
+                },
+              ]) /*this.renderMachine(this.state.machine?.slice(1))*/
+        }
 
-        {(this.calcIsOffLine(this.state.minorça))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "MINORÇA",
-          Start: 0,
-          Current: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
-          RealTimeProduction: 0,
-          CycleTime: 0
-        }]) : this.renderMachine([{...this.state.minorça[0], ...{['Type']:"MINORÇA"}, ...{['Alarm']: "Clear"}}])/*this.renderMachine(this.state.machine?.slice(1))*/}
+        {
+          this.calcIsOffLine(this.state.minorça)
+            ? this.renderMachine([
+                {
+                  DateTime: new Date(),
+                  Alarm: (
+                    <HiIcons.HiOutlineStatusOffline
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  Type: "MINORÇA",
+                  Start: 0,
+                  Current: (
+                    <MdIcons.MdOutlinePowerOff
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  RealTimeProduction: 0,
+                  CycleTime: 0,
+                },
+              ])
+            : this.renderMachine([
+                {
+                  ...this.state.minorça[0],
+                  ...{ ["Type"]: "MINORÇA" },
+                  ...{ ["Alarm"]: "Clear" },
+                },
+              ]) /*this.renderMachine(this.state.machine?.slice(1))*/
+        }
       </>
     );
   }

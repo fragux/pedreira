@@ -25,6 +25,7 @@ import * as HiIcons from "react-icons/hi";
 import * as MdIcons from "react-icons/md";
 import * as AiIcons from "react-icons/ai";
 import * as BiIcons from "react-icons/bi";
+import * as TbIcons from "react-icons/tb";
 
 import { ApplicationInstance } from "twilio/lib/rest/api/v2010/account/application";
 //import { render } from '@testing-library/react';
@@ -76,6 +77,7 @@ class Dashboard extends Component {
    // this.convertXmlToJson = this.convertXmlToJson.bind(this);
     this.calcIsOffLine = this.calcIsOffLine.bind(this);
     this.calcWork = this. calcWork.bind(this);
+    this.calcTimeStart = this.calcTimeStart.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
 
@@ -132,9 +134,10 @@ class Dashboard extends Component {
   calcWork = (value) => {
     if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"}/>
     if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
-    if (value === 3 || 4) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
     if (value === 2) return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />  
-    //else if (value === 4) return <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
+    if (value === 3) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
+    if (value === 4) return  <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
+    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"}/>
   }
 
   calcIsOffLine = (array) => {
@@ -155,6 +158,24 @@ class Dashboard extends Component {
       //return this.setState({isOffline: true});
     });
     return result;
+  }
+
+  calcTimeStart = (array) => {
+    let currentDate = new Date();
+    let result;
+    result = array?.map(({DateTime}) => {
+      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+      let diff = currentDate.getTime() - Date.parse(DateTime);
+      let vmindiff = Math.floor(diff/1000/60); // in minutes
+      diff -= vmindiff*1000*60
+      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
+      console.log( parseInt(DateTime.substring(8,10)));
+      return vmindiff; 
+    });
+    let horas = (result/60).toFixed(0);
+    let minutos =  (((result/60) % 2 ) - 1) * 60;
+
+    return `${horas}h${minutos.toFixed(0)}`
   }
 
   convertXmlToJson = (xmlString) => {
@@ -432,10 +453,10 @@ class Dashboard extends Component {
                 <h6>Tempo Ligada</h6>
 
                 <h2 style={{ color: "#333" }}>
-                  {(Type === "stonecut") ? Math.abs(currentDate.getHours().toString() -
+                  {/*(Type === "stonecut") ? (currentDate.getHours().toString() -
                     this.state.timeStartCNC1?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
-                    })) : Math.abs(currentDate.getHours().toString() -
+                    })) : (currentDate.getHours().toString() -
                     this.state.timeStartCNC2?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
                     }))}h
@@ -457,7 +478,9 @@ class Dashboard extends Component {
                     })).toString() : Math.abs(currentDate.getMinutes().toString() -
                     this.state.timeStartCNC2?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })).toString()}
+                    })).toString()*/}
+
+                    {(Type === "stonecut") ? this.calcTimeStart(this.state.timeStartCNC1) : this.calcTimeStart(this.state.timeStartCNC2) }
                   
                 </h2>
                 <h6>
@@ -520,7 +543,7 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{this.calcWork(Job)}</h1>
+                <h1 style={{ color: "#333" }}>{Alarm !=="Clear" ? this.calcWork(4) : (Job === 4) ? this.calcWork(5) : this.calcWork(Job)}</h1>
                 <h6>Estado</h6>
               </Card>
               <Card
