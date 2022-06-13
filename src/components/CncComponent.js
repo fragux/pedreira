@@ -164,18 +164,23 @@ class Dashboard extends Component {
     let currentDate = new Date();
     let result;
     result = array?.map(({DateTime}) => {
-      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+      //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
       diff -= vmindiff*1000*60
       console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
-      console.log( parseInt(DateTime.substring(8,10)));
-      return vmindiff; 
+      return Math.abs(vmindiff); 
     });
-    let horas = (result/60).toFixed(0);
-    let minutos =  (((result/60) % 2 ) - 1) * 60;
+    let horas = (1+(result/60)).toFixed(0);
+    let minutos =  Math.abs(((result/60) % 2 ) - 1) * 60;
+    
+    console.log("Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
+  
+    if (minutos.toFixed(0).toString().length === 1){
+      return `${horas}h0${minutos.toFixed(0)}`
+    }
 
-    return `${horas}h${minutos.toFixed(0)}`
+    else return `${horas}h${minutos.toFixed(0)}`
   }
 
   convertXmlToJson = (xmlString) => {

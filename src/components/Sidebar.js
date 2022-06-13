@@ -35,7 +35,9 @@ const Sidebar = (props) => {
             );
           })}
         </ul>
-        <div className="sidebar-gap"></div>
+        <div className="sidebar-gap">
+          
+        </div>
         <div className="sidebarList-exit">
           <div className="exit">
             <li

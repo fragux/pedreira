@@ -161,10 +161,10 @@ class Dashboard extends Component {
       diff -= vmindiff*1000*60
       console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
       console.log( parseInt(DateTime.substring(8,10)));
-      return vmindiff; 
+      return Math.abs(vmindiff); 
     });
     let horas = (result/60).toFixed(0);
-    let minutos =  (((result/60) % 2 ) - 1) * 60;
+    let minutos =  Math.abs(((result/60) % 2 ) - 1) * 60;
 
     return `${horas}h${minutos.toFixed(0)}`
   }
