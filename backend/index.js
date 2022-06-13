@@ -17,7 +17,7 @@ const client = require("twilio")(
   "AC30d90c932ea37c30c67b90ed466a24ad",
   "d2994d9914dcabe2dd60190c96fb4b0d"
 );
-
+/*
 const db = mysql.createPool({
   host: "orion.morecolab.pt",
   port: "5505",
@@ -25,7 +25,85 @@ const db = mysql.createPool({
   password: "pedra",
   insecureAuth: true,
   database: "db",
-});
+});*/
+
+let mysqlDB = null; // db handler
+let connected = null; // default null / boolean
+let connectFreq = 5000; // When database is disconnected, how often to attempt reconnect? Miliseconds
+let testFreq = 50000; // After database is connected, how often to test connection is still good? Miliseconds
+
+function attemptMySQLConnection(callback) {
+  console.log('attemptMySQLConnection')
+ 
+
+    mysqlDB = mysql.createPool({
+      host: "orion.morecolab.pt",
+      port: "5505",
+      user: "pedra",
+      password: "pedra",
+      insecureAuth: true,
+      database: "db",
+      connectionLimit: 300,
+      waitForConnections: true, // Default value.
+      queueLimit: 300, // Unlimited
+      acquireTimeout: 60000,
+      timeout: 60000,
+      debug: false
+    });
+
+    testConnection((result) => {
+      callback(result)
+    })
+
+  } 
+
+function testConnection(cb) {
+  console.log('testConnection')
+  mysqlDB.query('SELECT 1 + 1 AS solution', (error, results, fields) => {
+    try {
+      if (error) {
+        throw new Error('No DB Connection');
+      } else {
+        if (results[0].solution) {
+          cb(true)
+        } else {
+          cb(false)
+        }
+      }
+    } catch (e) {
+      // console.error(e.name + ': ' + e.message);
+      cb(false)
+    }
+  });
+}
+
+function callbackCheckLogic(res) {
+  if (res) {
+    console.log('Connect was good. Scheduling next test for ', testFreq, 'ms')
+    setTimeout(testConnectionCB, testFreq);
+  } else {
+    console.log('Connection was bad. Scheduling connection attempt for ', connectFreq, 'ms')
+    setTimeout(connectMySQL, connectFreq);
+  }
+}
+
+function testConnectionCB() {
+  testConnection((result) => {
+    callbackCheckLogic(result);
+  })
+}
+
+function connectMySQL() {
+  attemptMySQLConnection(result => {
+    callbackCheckLogic(result);
+  });
+}
+
+connectMySQL(); // Start the process by calling this once
+
+//module.exports = mysqlDB;
+
+
 
 app.use(cors());
 app.use(express.json());
