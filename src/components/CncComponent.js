@@ -137,18 +137,19 @@ class Dashboard extends Component {
     if (value === 2) return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />  
     if (value === 3) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
     if (value === 4) return  <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
-    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"}/>
+    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"} />
   }
 
   calcIsOffLine = (array) => {
     let currentDate = new Date();
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = new Boolean();
     array?.map(({DateTime}) => {
       console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
       diff -= vmindiff*1000*60
-      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
+      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime.toString().substring(0,DateTime.toString().length-5)),"Convertida em minutos: ", vmindiff);
       console.log( parseInt(DateTime.substring(8,10)));
       if(vmindiff > 10){
         //console.log("Teste para verificar se está offline: ", true);
@@ -162,19 +163,20 @@ class Dashboard extends Component {
 
   calcTimeStart = (array) => {
     let currentDate = new Date();
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result;
     result = array?.map(({DateTime}) => {
       //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60
+      diff -= vmindiff*1000*60 ;
       console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
       return Math.abs(vmindiff); 
     });
-    let horas = (1+(result/60)).toFixed(0);
-    let minutos =  Math.abs(((result/60) % 2 ) - 1) * 60;
+    let horas = Math.round((result/60));
+    let minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
     
-    console.log("Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
+    console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
   
     if (minutos.toFixed(0).toString().length === 1){
       return `${horas}h0${minutos.toFixed(0)}`
@@ -574,7 +576,7 @@ class Dashboard extends Component {
               >
                 <h6>Alarme</h6>
                 {Alarm.length > 6 ? (
-                  <h5 style={{ color: "#333", fontSize: 10 }}>{Alarm}</h5>
+                  <h4 style={{ color: "#333", fontSize: 10 }}>{Alarm.substring(5,Alarm.length)}</h4>
                 ) : (
                   <h1 style={{ color: "#333" }}>{Alarm}</h1>
                 )}

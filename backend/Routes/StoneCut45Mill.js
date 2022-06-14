@@ -55,7 +55,7 @@ router.get('/machine/cnc2/job', (req, res) =>{
 });
 
 router.get('/machine/cnc2/start', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 Limit 1";    
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Tension >100 Limit 1";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

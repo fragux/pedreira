@@ -77,26 +77,26 @@ class Dashboard extends Component {
     console.log("Botão real time: ---->", this.props.realTime);
   }
 
-  async getData() {
-    await axios
+  getData() {
+    axios
       .get("http://localhost:3001/machine/lousada/last")
       .then((response) => {
         console.log("Get DATA from LOUSADA: ", response.data);
         this.setState({ lousada: response.data });
       });
-    await axios
+    axios
       .get("http://localhost:3001/machine/minorca/last")
       .then((response) => {
         console.log("Get DATA from MINORÇA: ", response.data);
         this.setState({ minorça: response.data });
       });
 
-    await axios
+    axios
       .get("http://localhost:3001/machine/lousada/start")
       .then((response) => {
         this.setState({ timeStartLousada: response.data });
       });
-    await axios
+    axios
       .get("http://localhost:3001/machine/minorca/start")
       .then((response) => {
         this.setState({ timeStartMinorca: response.data });
@@ -109,7 +109,6 @@ class Dashboard extends Component {
 
   async componentDidMount() {
     this.getData();
-    this.render();
     setInterval(() => {
       this.getData();
       this.render();
@@ -126,6 +125,7 @@ class Dashboard extends Component {
 
   calcIsOffLine = (array) => {
     let currentDate = new Date();
+    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = new Boolean();
     array?.map(({ DateTime }) => {
       console.log(
@@ -153,19 +153,20 @@ class Dashboard extends Component {
 
   calcTimeStart = (array) => {
     let currentDate = new Date();
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result;
     result = array?.map(({DateTime}) => {
       //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60
+      diff -= vmindiff*1000*60 ;
       console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
       return Math.abs(vmindiff); 
     });
-    let horas = (1+(result/60)).toFixed(0);
-    let minutos =  Math.abs(((result/60) % 2 ) - 1) * 60;
+    let horas = Math.round((result/60));
+    let minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
     
-    console.log("Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
+    console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
   
     if (minutos.toFixed(0).toString().length === 1){
       return `${horas}h0${minutos.toFixed(0)}`
@@ -443,7 +444,7 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  {Start === 0 ? "Standby" : Start === 1 ? "On" : "Off"}
+                  {Current}                  {/*Start === 0 ? "Standby" : Start === 1 ? "On" : "Off"*/}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
@@ -572,7 +573,10 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{this.calcWork(Start)}</h1>
+                <h1 style={{ color: "#333" }}>
+                  {this.calcWork(Start)}
+                  {}
+                  </h1>
                 <h6>Estado</h6>
               </Card>
               <Card
@@ -601,7 +605,8 @@ class Dashboard extends Component {
                   <h5 style={{ color: "#333", fontSize: 10 }}>{Alarm}</h5>
                 ) : (
                   <h1 style={{ color: "#333" }}>
-                    {Start === 0 ? "Stop" : Alarm}
+                    {/*Start === 0 ? "Stop" : Alarm*/}
+                    {Alarm}
                   </h1>
                 )}
 
@@ -688,6 +693,7 @@ class Dashboard extends Component {
                     />
                   ),
                   RealTimeProduction: 0,
+                  TargetProduction: 0,
                   CycleTime: 0,
                 },
               ])
@@ -720,6 +726,7 @@ class Dashboard extends Component {
                     />
                   ),
                   RealTimeProduction: 0,
+                  TargetProduction: 0,
                   CycleTime: 0,
                 },
               ])

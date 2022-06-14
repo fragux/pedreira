@@ -15,7 +15,7 @@ const db = mysql.createPool({
 
 
 router.get('/machine/lousada/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `Lousada` ORDER BY `DateTime` DESC LIMIT 1";
+    const sqlSelect = "SELECT * FROM db.Lousada WHERE Date(DateTime) = CURDATE() ORDER BY `DateTime` DESC LIMIT 1";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

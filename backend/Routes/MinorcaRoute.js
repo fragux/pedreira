@@ -66,7 +66,7 @@ router.get('/minorca/mes', (req, res) =>{
 });
 
 router.get('/machine/minorca/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `Minorça` ORDER BY `DateTime` DESC LIMIT 1";
+    const sqlSelect = "SELECT * FROM db.Minorça WHERE Date(DateTime) = CURDATE() ORDER BY `DateTime` DESC LIMIT 1";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

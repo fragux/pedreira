@@ -30,10 +30,10 @@ const db = mysql.createPool({
 let mysqlDB = null; // db handler
 let connected = null; // default null / boolean
 let connectFreq = 5000; // When database is disconnected, how often to attempt reconnect? Miliseconds
-let testFreq = 50000; // After database is connected, how often to test connection is still good? Miliseconds
+let testFreq = 600000; // After database is connected, how often to test connection is still good? Miliseconds
 
 function attemptMySQLConnection(callback) {
-  console.log('attemptMySQLConnection')
+  console.log('Tentativa de ligação à BD MySQL\n')
  
 
     mysqlDB = mysql.createPool({
@@ -58,11 +58,11 @@ function attemptMySQLConnection(callback) {
   } 
 
 function testConnection(cb) {
-  console.log('testConnection')
+  console.log('\nTeste à ligação MySQL')
   mysqlDB.query('SELECT 1 + 1 AS solution', (error, results, fields) => {
     try {
       if (error) {
-        throw new Error('No DB Connection');
+        throw new Error('\nSem ligação!!!');
       } else {
         if (results[0].solution) {
           cb(true)
@@ -79,10 +79,10 @@ function testConnection(cb) {
 
 function callbackCheckLogic(res) {
   if (res) {
-    console.log('Connect was good. Scheduling next test for ', testFreq, 'ms')
+    console.log('\nLigação com sucesso!!!\nPróximo teste em: ', testFreq, 'ms')
     setTimeout(testConnectionCB, testFreq);
   } else {
-    console.log('Connection was bad. Scheduling connection attempt for ', connectFreq, 'ms')
+    console.log('\nMá ligação com BD\nPróxima tentativa de ligação em: ', connectFreq, 'ms')
     setTimeout(connectMySQL, connectFreq);
   }
 }

@@ -40,7 +40,7 @@ class Machine extends Component {
 
   handleTimeback = (parentData) => {
     this.setState({ parentData });
-    this.state.timeTotal = parentData;
+    this.setState({timeTotal : parentData});
     console.log("Tempo total da máquina: ", parentData);
     /*axios.get("http://localhost:3001/monofio")
                                 .then((response) => {
@@ -51,8 +51,8 @@ class Machine extends Component {
   };
 
   handleRealTime = (childData) => {
-    this.state.realTime = childData;
-    this.setState({ realtime: this.state.realTime });
+
+    this.setState({ realtime: childData });
     console.log("Real Time selecionado? ---->: ", this.state.realTime);
     return;
   };

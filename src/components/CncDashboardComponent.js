@@ -413,7 +413,7 @@ class Dashboard extends Component {
               >
                 <h6>Tempo Ligada</h6>
 
-                <h2 style={{ color: "#333" }}>
+                <h3 style={{ color: "#333" }}>
                   {(Type === "stonecut") ? Math.abs(currentDate.getHours().toString() -
                     this.state.timeStartCNC1?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
@@ -429,7 +429,7 @@ class Dashboard extends Component {
                       return DateTime.toString().substring(14, 16);
                     })) }
                   
-                </h2>
+                </h3>
                 <h6>
                   Start:{" "}
                   <b>
@@ -531,6 +531,7 @@ class Dashboard extends Component {
             </div>
           </div>
         
+        {/*
 
               <MyChart
                 maquina={maquinaValues}
@@ -538,7 +539,7 @@ class Dashboard extends Component {
                 currentItemChart={this.currentItem}
                 selectedMaquina={selectedMaquina}
                 kWh={this.randomFunctionKw()}
-              />
+                /> */}
             </>
           )
         )}

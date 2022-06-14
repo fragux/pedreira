@@ -41,7 +41,7 @@ router.get('/machine/cnc1/last', (req, res) =>{
 
 
 router.get('/machine/cnc1/job', (req, res) =>{
-    const sqlSelect = "SELECT DateTime, Job, Production, Production - LAG(Production) OVER (PARTITION BY Job ORDER BY DateTime) AS nJob FROM `CNC1` WHERE DATE(DateTime) = CURDATE()  AND Job = 0 AND Production = 0 ";
+    const sqlSelect = "SELECT DateTime, Job, Production, Production - LAG(Production) OVER (PARTITION BY Job ORDER BY DateTime) AS nJob FROM `CNC1` WHERE DATE(DateTime) = CURDATE()  AND Job = 1 AND Production = 0 ";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -54,7 +54,7 @@ router.get('/machine/cnc1/job', (req, res) =>{
 });
 
 router.get('/machine/cnc1/start', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC1` WHERE DATE(DateTime) = CURDATE() AND Tension >20 Limit 1";    
+    const sqlSelect = "SELECT * FROM `CNC1` WHERE DATE(DateTime) = CURDATE() AND Tension >100 Limit 1";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
