@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 //import { Media } from 'reactstrap';
+import { ProgressBar, Badge } from "react-bootstrap";
 import {
   Card,
   /* CardTitle,
   CardBody,
   CardText*/
 } from "reactstrap";
-import { ProgressBar, Badge } from "react-bootstrap";
 import { MACHINE } from "../data/machine";
 import { LOUSADA } from "../data/maquina";
 import { DEFAULT } from "../data/default";
@@ -18,6 +18,16 @@ import MyChart from "./ChartComponent";
 import "./DashBoardComponent.css";
 import axios from "axios";
 import Api from "twilio/lib/rest/Api";
+import "./CncComponent.css";
+import XML from "../data/relatorio.xml";
+import XMLParser from "react-xml-parser";
+import * as HiIcons from "react-icons/hi";
+import * as MdIcons from "react-icons/md";
+import * as AiIcons from "react-icons/ai";
+import * as BiIcons from "react-icons/bi";
+import * as TbIcons from "react-icons/tb";
+
+import { ApplicationInstance } from "twilio/lib/rest/api/v2010/account/application";
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
@@ -34,14 +44,15 @@ class Dashboard extends Component {
       currentItem: "",
       key: 1,
       machine: [],
+      machine1: [],
       timeTotal: "",
-      timePeriod: this.props.currentMode,
+      //timePeriod: this.props.currentMode,
       corrente: "",
       velocidade: "",
-      realTime: this.props.realTime,
+      //realTime: this.props.realTime,
       statusCorrente: false,
       statusVelocidade: false,
-      api : this.props.api,
+      api: this.props.api,
       endPoint: this.props.endPoint,
       production1: [],
       production2: [],
@@ -54,26 +65,32 @@ class Dashboard extends Component {
       timeStartCNC2: [],
     };
     this.getData = this.getData.bind(this);
-    this.renderSwitch = this.renderSwitch.bind(this);
-    this.handleSelectItem = this.handleSelectItem.bind(this);
-    this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
-    this.randomFunction = this.randomFunction.bind(this);
-    this.randomFunctionKw = this.randomFunctionKw.bind(this);
-    this.props.parentCallback(this.state.timeTotal);
-    this.handleResponse = this.handleResponse.bind(this);
     
+    this.handleSelectItem = this.handleSelectItem.bind(this);
+    //this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
+    //this.randomFunction = this.randomFunction.bind(this);
+    //this.randomFunctionKw = this.randomFunctionKw.bind(this);
+    //this.props.parentCallback(this.state.timeTotal);
+    this.handleResponse = this.handleResponse.bind(this);
+    this.renderMachine = this.renderMachine.bind(this);
+    this.calcJob = this.calcJob.bind(this);
+   // this.convertXmlToJson = this.convertXmlToJson.bind(this);
+    this.calcIsOffLine = this.calcIsOffLine.bind(this);
+    this.calcWork = this. calcWork.bind(this);
+    this.calcTimeStart = this.calcTimeStart.bind(this);
+    this.renderSelectedMachine = this.renderSelectedMachine.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
-  
-  async getData() {
-    await axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
+
+  getData() {
+    axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
       console.log(
         "Get DATA from function getData() and setInterval: ",
         response.data
       );
       this.setState({ machine: response.data });
     });
-   await  axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
+    axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
       console.log(
         "Get DATA from function getData() and setInterval: ",
         response.data
@@ -81,49 +98,23 @@ class Dashboard extends Component {
       this.setState({ machine1: response.data });
     });
 
-    await axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
+    axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
       this.setState({ production1: response.data });
     });
-    await axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
+    axios.get("http://localhost:3001/machine/cnc2/job").then((response) => {
       this.setState({ production2: response.data });
     });
-    await axios.get("http://localhost:3001/machine/cnc1/start").then((response) => {
+    axios.get("http://localhost:3001/machine/cnc1/start").then((response) => {
       this.setState({ timeStartCNC1: response.data });
     });
-    await axios.get("http://localhost:3001/machine/cnc2/start").then((response) => {
+    axios.get("http://localhost:3001/machine/cnc2/start").then((response) => {
       this.setState({ timeStartCNC2: response.data });
     });
     this.calcJob();
+    //this.convertXmlToJson(XML);
     this.calcIsOffLine();
     
   }
-  calcIsOffLine = (array) => {
-    let currentDate = new Date();
-    let result = new Boolean();
-    array?.map(({DateTime}) => {
-      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
-      let diff = currentDate.getTime() - Date.parse(DateTime);
-      let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60
-      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
-      console.log( parseInt(DateTime.substring(8,10)));
-      if(vmindiff > 10){
-        //console.log("Teste para verificar se está offline: ", true);
-        result = true;
-      }else result = false;
-
-      //return this.setState({isOffline: true});
-    });
-    return result;
-  }
-  calcJob = (array) => {
-    const initialValue = 0;
-    var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
-  );
-      
-      console.log("Calculo dos trabalhos realizados: ", result);
-      return array;
-};
 
   async componentDidMount() {
     this.getData();
@@ -138,8 +129,69 @@ class Dashboard extends Component {
             //production: Production
           };
         });
-    }, 100000);
+    }, 240000);
   }
+
+  calcWork = (value) => {
+    if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"}/>
+    if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
+    if (value === 2) return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />  
+    if (value === 3) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
+    if (value === 4) return  <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
+    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"} />
+  }
+
+  calcIsOffLine = (array) => {
+    let currentDate = new Date();
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    let result = new Boolean();
+    array?.map(({DateTime}) => {
+      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+      let diff = currentDate.getTime() - Date.parse(DateTime);
+      let vmindiff = Math.floor(diff/1000/60); // in minutes
+      diff -= vmindiff*1000*60
+      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime.toString().substring(0,DateTime.toString().length-5)),"Convertida em minutos: ", vmindiff);
+      console.log( parseInt(DateTime.substring(8,10)));
+      if(vmindiff > 10){
+        //console.log("Teste para verificar se está offline: ", true);
+        result = true;
+      }else result = false;
+
+      //return this.setState({isOffline: true});
+    });
+    return result;
+  }
+
+  calcTimeStart = (array) => {
+    let currentDate = new Date();
+    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    let result = 0;
+    let horas = 0;
+    let minutos = 0;
+    result = array?.map(({DateTime}) => {
+      //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+      let diff = currentDate.getTime() - Date.parse(DateTime);
+      let vmindiff = Math.floor(diff/1000/60); // in minutes
+      diff -= vmindiff*1000*60 ;
+      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
+      return (vmindiff); 
+    });
+    horas = Math.round((result/60));
+    minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
+    minutos = ((((minutos).toFixed(0)/60) % 2)*60).toFixed(0);
+   // console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
+  
+    if (minutos.length === 1){
+      return `${horas}h0${minutos}`
+    }
+    else if (minutos.length === 3){
+
+      return `${horas}h${minutos}`
+    }
+    else return (`${horas}h${minutos}`)
+  }
+
+  
 
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
@@ -151,16 +203,7 @@ class Dashboard extends Component {
     console.log(maquinaValues.maquina);
   };
 
-  renderSwitch(param) {
-    switch (param) {
-      case "MONOFIO NFC 2000":
-        return (this.state = { maquina: MACHINE });
-      case "LOUSADA 2000":
-        return (this.state = { maquina: LOUSADA });
-      default:
-        return (this.state = { maquina: DEFAULT });
-    }
-  }
+ 
 
   handleSelectItem(key, dashboardItem) {
     console.log("Dashboard button:", dashboardItem);
@@ -172,7 +215,7 @@ class Dashboard extends Component {
       case "MONOFIO NFC 2000":
         switch (this.props.currentMode) {
           case "dia":
-            this.setState({endPoint: "/monofio/dia"});
+            this.setState({ endPoint: "/monofio/dia" });
             axios.get("http://localhost:3001/monofio/dia").then((response) => {
               console.log("Get do item selecionado: ", response.data);
               this.setState({ machine: response.data });
@@ -344,27 +387,24 @@ class Dashboard extends Component {
     });
   };
 
-  render() {
-    const machine = this.state.machine;
-    // console.log("Array máquina para ser alterado o formato da data--->", machine);
-    if (this.props.realTime);
-    console.log(
-      "Período selecionado passado para dashboard: " + this.props.realTime
+  calcJob = (array) => {
+      const initialValue = 0;
+      var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
     );
-    //console.log("Array a ser passado da query para const machine: ", machine);
-    //console.log("Item Selecionado: ", this.state.currentItem);
-    const selectedMaquina = this.props.selectedMaquina;
-    // console.log("Máquina selecionada: ", this.props.selectedMaquina )
-    //this.handleSelectedMaquina(this.props.selectedMaquina);
-    const maquinaValues = this.renderSwitch(selectedMaquina);
-   
-    console.log("Valor tempo: ", this.state.timeTotal);
+        
+        console.log("Calculo dos trabalhos realizados: ", result);
+        return array;
+  };
+
+  renderSelectedMachine= (value)=>{
+
+    if (value === "STONECUT") return true ; 
+    if (value === "STONECUT45MILL") return false; 
+  }
+
+  renderMachine = (machine) => {
     let currentDate = new Date();
-    //console.log(maquinaValues[0]);
-    // console.log("Objecto a ser renderizado no dashboard: " + this.handleResponse(selectedMaquina));
-    return (
-      <>
-        {machine?.map(
+    return machine?.map(
       ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
         <>
           <div className="container-dashboard-d ">
@@ -413,23 +453,37 @@ class Dashboard extends Component {
               >
                 <h6>Tempo Ligada</h6>
 
-                <h3 style={{ color: "#333" }}>
-                  {(Type === "stonecut") ? Math.abs(currentDate.getHours().toString() -
+                <h2 style={{ color: "#333" }}>
+                  {/*(Type === "stonecut") ? (currentDate.getHours().toString() -
                     this.state.timeStartCNC1?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
-                    })) : Math.abs(currentDate.getHours().toString() -
+                    })) : (currentDate.getHours().toString() -
                     this.state.timeStartCNC2?.map(({ DateTime }) => {
                       return DateTime.toString().substring(11, 13);
                     }))}h
-                    {(Type === "stonecut") ? Math.abs(currentDate.getMinutes().toString() -
+                    {(Type === "stonecut") ? (Math.abs(currentDate.getMinutes().toString() -
                     this.state.timeStartCNC1?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })) : Math.abs(currentDate.getMinutes().toString() -
+                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartCNC1?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartCNC1?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })).toString() : (Math.abs(currentDate.getMinutes().toString() -
                     this.state.timeStartCNC2?.map(({ DateTime }) => {
                       return DateTime.toString().substring(14, 16);
-                    })) }
+                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartCNC2?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
+                    this.state.timeStartCNC2?.map(({ DateTime }) => {
+                      return DateTime.toString().substring(14, 16);
+                    })).toString()*/}
+
+                    {(Type === "stonecut") ? this.calcTimeStart(this.state.timeStartCNC1) : this.calcTimeStart(this.state.timeStartCNC2) }
                   
-                </h3>
+                </h2>
                 <h6>
                   Start:{" "}
                   <b>
@@ -456,10 +510,10 @@ class Dashboard extends Component {
                 <h6>Produção</h6>
                 <span className="badgeWork">
                   <Badge bg="danger" style={{ fontWeight: "lighter" }}>
-                    #
+                    {`# `}
                     {Type === "stonecut"
-                      ? this.calcJob(this.state.production1)
-                      : this.state.production2}
+                      ? this.calcJob(this.state.production1).length
+                      : this.state.production2.length}
                   </Badge>
                 </span>
                 <h1 style={{ color: "#333" }}>{Production}%</h1>
@@ -490,8 +544,8 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{Job}</h1>
-                <h6>Executado</h6>
+                <h1 style={{ color: "#333" }}>{Alarm !=="Clear" ? this.calcWork(4) : (Job === 4) ? this.calcWork(5) : this.calcWork(Job)}</h1>
+                <h6>Estado</h6>
               </Card>
               <Card
                 eventkey={4}
@@ -516,7 +570,7 @@ class Dashboard extends Component {
               >
                 <h6>Alarme</h6>
                 {Alarm.length > 6 ? (
-                  <h5 style={{ color: "#333", fontSize: 10 }}>{Alarm}</h5>
+                  <h4 style={{ color: "#333", fontSize: 10 }}>{Alarm.substring(5,Alarm.length)}</h4>
                 ) : (
                   <h1 style={{ color: "#333" }}>{Alarm}</h1>
                 )}
@@ -530,19 +584,35 @@ class Dashboard extends Component {
               </Card>
             </div>
           </div>
-        
-        {/*
+        </>
+      )
+    );
+  };
 
-              <MyChart
-                maquina={maquinaValues}
-                machine={machine}
-                currentItemChart={this.currentItem}
-                selectedMaquina={selectedMaquina}
-                kWh={this.randomFunctionKw()}
-                /> */}
-            </>
-          )
-        )}
+  render() {
+    
+    return (
+     this.renderSelectedMachine(this.props.selectedMaquina) ?
+     <>
+     {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
+          DateTime: new Date(),
+          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
+          Type: "STONECUT",
+          Job: 0,
+          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
+          Production: 0,
+          Tension: 0
+        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
+</>:<>
+        {(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
+          DateTime: new Date(),
+          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
+          Type: "STONECUT45MILL",
+          Job: 0,
+          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
+          Production: 0,
+          Tension: 0
+        }]) : this.renderMachine(this.state.machine1)/*this.renderMachine(this.state.machine?.slice(1))*/}
       </>
     );
   }

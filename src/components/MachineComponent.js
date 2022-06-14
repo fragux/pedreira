@@ -7,6 +7,7 @@ import DashboardGeral from "./DashBoardGeral";
 import CNC from "./CncComponent";
 import LousadaMinorca from "./LousadaMinorcaComponent";
 import CNCDashBoard from "./CncDashboardComponent";
+import LousadaMinorcaDashBoard from "./LousadaMinorcaDashboard";
 import "./DashBoardComponent.css";
 import Sidebar from "./Sidebar";
 
@@ -127,12 +128,22 @@ renderTimeTotal(parentData){
       case "STONECUT45MILL":
         return (
           <CNCDashBoard
-            realTime={this.state.realTime}
-            selectedMaquina={this.state.machine}
-            parentCallback={this.handleTimeback}
-            currentMode={this.state.timePeriod}
-          />
+              //realTime={this.state.realTime}
+              selectedMaquina={this.state.machine}
+              //parentCallback={this.handleTimeback}
+              //currentMode={this.state.timePeriod}
+            />
         );
+        case "LOUSADA":
+          case "MINORÇA":
+            return (
+              <LousadaMinorcaDashBoard
+                  //realTime={this.state.realTime}
+                  selectedMaquina={this.state.machine}
+                  //parentCallback={this.handleTimeback}
+                  //currentMode={this.state.timePeriod}
+                />
+            );
       default:
         return (
           <>

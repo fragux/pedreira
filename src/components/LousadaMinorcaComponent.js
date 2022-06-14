@@ -154,24 +154,27 @@ class Dashboard extends Component {
   calcTimeStart = (array) => {
     let currentDate = new Date();
     //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
-    let result;
+    let result = 0;
+    let horas = 0;
+    let minutos = 0;
     result = array?.map(({DateTime}) => {
       //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
       diff -= vmindiff*1000*60 ;
       console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
-      return Math.abs(vmindiff); 
+      return (vmindiff); 
     });
-    let horas = Math.round((result/60));
-    let minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
+    horas = Math.round((result/60));
+    minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
     
     console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
   
     if (minutos.toFixed(0).toString().length === 1){
       return `${horas}h0${minutos.toFixed(0)}`
     }
-
+    else if (minutos.toFixed(0).toString().length === 3)
+    return `${horas}h${((((minutos).toFixed(0)/60) % 2)*60).toFixed(0)}`
     else return `${horas}h${minutos.toFixed(0)}`
   }
 

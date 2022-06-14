@@ -18,9 +18,9 @@ export const SidebarData = [
     path: "MONOFIO NFC 2000",
   },
   {
-    title: "LOUSADA 2000",
+    title: "LOUSADA",
     icon: <AiIcons.AiOutlineFundView size={20} />,
-    path: "LOUSADA 2020",
+    path: "LOUSADA",
   },
   {
     title: "MINORÇA",
