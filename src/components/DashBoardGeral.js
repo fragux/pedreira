@@ -67,7 +67,7 @@ class DashboardGeral extends Component {
             return console.log("API -> ", this.state.api);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({
       machine: this.machine,
       timeTotal: this.state.timeTotal,

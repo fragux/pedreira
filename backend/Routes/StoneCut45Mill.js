@@ -42,7 +42,7 @@ router.get('/machine/cnc2/last', (req, res) =>{
 });
 
 router.get('/machine/cnc2/job', (req, res) =>{
-    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production = 0";
+    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production <=1";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

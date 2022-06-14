@@ -68,7 +68,7 @@ class Dashboard extends Component {
             console.log("API -> ", this.state.endPoint);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({
       machine: this.machine,
       timeTotal: this.state.timeTotal,

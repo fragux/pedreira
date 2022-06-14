@@ -104,7 +104,7 @@ renderTimeTotal(parentData){
 
 }*/
 
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({
       timePeriod: this.state.timePeriod,
       realTime: this.state.realTime,

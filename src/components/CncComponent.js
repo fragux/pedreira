@@ -163,12 +163,14 @@ class Dashboard extends Component {
 
   calcTimeStart = (array) => {
     let currentDate = new Date();
-    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    console.log("Tipo de timeZone: ", Math.abs(currentDate.getTimezoneOffset()))
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = 0;
     let horas = 0;
     let minutos = 0;
     result = array?.map(({DateTime}) => {
       //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+      //console.log("Tipo de timeZone BD: ", Math.abs(Date.parse(DateTime).getTimezoneOffset()))
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
       diff -= vmindiff*1000*60 ;
@@ -176,7 +178,7 @@ class Dashboard extends Component {
       return (vmindiff); 
     });
     horas = Math.round((result/60));
-    minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
+    minutos = result - ( Math.floor(((result/60) % 2 ) ) *60);
     minutos = ((((minutos).toFixed(0)/60) % 2)*60).toFixed(0);
    // console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
   
@@ -432,7 +434,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={2}
-                onClick={() => this.handleSelectItem(2, "corrente")}
+                //onClick={() => this.handleSelectItem(2, "corrente")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "corrente" ? " active" : " ")
@@ -456,7 +458,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={7}
-                onClick={() => this.handleSelectItem(1, "tempo")}
+                //onClick={() => this.handleSelectItem(1, "tempo")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "tempo" ? " active" : " ")
@@ -510,7 +512,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={1}
-                onClick={() => this.handleSelectItem(1, "pecas")}
+               // onClick={() => this.handleSelectItem(1, "pecas")}
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
                   (Production === 100 ? " blinkDone" : " ")
@@ -548,7 +550,7 @@ class Dashboard extends Component {
 
               <Card
                 eventkey={3}
-                onClick={() => this.handleSelectItem(3, "horas")}
+                //onClick={() => this.handleSelectItem(3, "horas")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "horas" ? " active" : "")
@@ -560,7 +562,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={4}
-                onClick={() => this.handleSelectItem(4, "agua")}
+                //onClick={() => this.handleSelectItem(4, "agua")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "agua" ? " active" : "")
@@ -574,7 +576,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={5}
-                onClick={() => this.handleSelectItem(5, "velocidade")}
+               // onClick={() => this.handleSelectItem(5, "velocidade")}
                 className={
                   "card-box-header" + (Alarm !== "Clear" ? " blink" : " ")
                 }
