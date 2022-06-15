@@ -20,7 +20,7 @@ class SubHeader extends Component {
       key: 1,
       isClicked: false,
       timeTotal: this.props.timeTotal,
-      currentMode: "dia",
+      currentMode: "",
       isModalOpen: false,
       isModalConfigOpen: false,
       currentTime: false,
@@ -47,18 +47,21 @@ class SubHeader extends Component {
       isModalConfigOpen: !this.state.isModalConfigOpen,
     });
   }
+  componentDidMount(){
+    this.setState({currentMode : "dia"})
+  }
 
-  getTimePeriod(current_mode) {
-    console.log("Estado actual: ", current_mode);
+  getTimePeriod(modo) {
+    console.log("Estado actual: ", modo);
     //this.handleSelect(1, this.currentMode);
-    this.setState({ currentMode: current_mode });
-    switch (current_mode) {
+    this.setState({ currentMode: modo});
+    switch (modo) {
       case "dia":
-        return this.setState({ current_mode: current_mode });
+        return this.setState({ currentMode: modo });
       case "semana":
-        return this.setState({ current_mode: current_mode });
+        return this.setState({ currentMode: modo});
       case "mes":
-        return this.setState({ current_mode: current_mode });
+        return this.setState({ currentMode: modo });
       default:
         return;
     }
@@ -70,7 +73,7 @@ class SubHeader extends Component {
     this.currentMode = timePeriod;
     this.setState({
       isClicked: true,
-      currentMode: timePeriod,
+      currentMode: this.currentMode,
     });
     //props.parentCallback(this.state.timeTotal)
     this.props.timePeriod(this.currentMode);
@@ -89,27 +92,27 @@ class SubHeader extends Component {
     return (
       <div className="container-subheader" >
         <div className="row-subheader" >
-          <div className="buttons" eventkey={this.state.key}>
+          <div className="buttons" eventkey={this.state.currentMode} eventkeyActive = "dia">
             <button
-              eventkey={1}
+              eventkey={"dia"}
               onClick={() => this.handleSelect(1, "dia")}
-              className={"dia" + (this.currentMode === "dia" ? " active" : "")}
+              className={"dia" + (this.state.currentMode === "dia" ? " active" : "")}
             >
               Dia
             </button>
             <button
-              eventkey={2}
+              eventkey={"semana"}
               onClick={() => this.handleSelect(2, "semana")}
               className={
-                "semana" + (this.currentMode === "semana" ? " active" : "")
+                "semana" + (this.state.currentMode === "semana" ? " active" : "")
               }
             >
               Semana
             </button>
             <button
-              eventkey={3}
+              eventkey={"mes"}
               onClick={() => this.handleSelect(3, "mes")}
-              className={"mes" + (this.currentMode === "mes" ? " active" : "")}
+              className={"mes" + (this.state.currentMode === "mes" ? " active" : "")}
             >
               Mês
             </button>

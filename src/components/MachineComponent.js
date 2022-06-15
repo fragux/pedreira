@@ -19,7 +19,7 @@ class Machine extends Component {
       machine: [],
       chartData: [],
       timeTotal: "",
-      timePeriod: "",
+      timePeriod: "dia",
       api: "",
       endpoint: "",
       realTime: false,
@@ -131,7 +131,7 @@ renderTimeTotal(parentData){
               //realTime={this.state.realTime}
               selectedMaquina={this.state.machine}
               //parentCallback={this.handleTimeback}
-              //currentMode={this.state.timePeriod}
+              currentMode={this.state.timePeriod}
             />
         );
         case "LOUSADA":
@@ -141,7 +141,7 @@ renderTimeTotal(parentData){
                   //realTime={this.state.realTime}
                   selectedMaquina={this.state.machine}
                   //parentCallback={this.handleTimeback}
-                  //currentMode={this.state.timePeriod}
+                  currentMode={this.state.timePeriod}
                 />
             );
       default:

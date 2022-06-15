@@ -12,8 +12,32 @@ const db = mysql.createPool({
 })
 
 
-router.get('/machine/lousada', (req, res) =>{
-    const sqlSelect = "SELECT * from db.Lousada WHERE Date(DateTime) = CURDATE()";
+router.get('/machine/lousada/dia', (req, res) =>{
+    const sqlSelect = "SELECT * FROM db.Lousada WHERE DATE(DateTime) = CURDATE() ORDER BY DateTime DESC";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+router.get('/machine/lousada/semana', (req, res) =>{
+    const sqlSelect = "SELECT * FROM db.Lousada WHERE DATE(DateTime) >= CURDATE() - INTERVAL 7 DAY";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+router.get('/machine/lousada/mes', (req, res) =>{
+    const sqlSelect = "SELECT * FROM db.Lousada WHERE DATE(DateTime) >= CURDATE() - INTERVAL 30 DAY";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

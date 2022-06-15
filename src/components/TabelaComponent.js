@@ -29,7 +29,7 @@ import * as HiIcons from "react-icons/hi";
 import Machine from "./MachineComponent";
 import { getDatasetAtEvent } from "react-chartjs-2";
 
-export default function MyChart({ selectedMaquina, machine }) {
+export default function MyChart({ selectedMaquina, machine, time }) {
   const columns = [
     {
       title: "Data",
@@ -129,7 +129,7 @@ export default function MyChart({ selectedMaquina, machine }) {
     else if (name === "MINORÇA") name = "minorca";
     else if (name === "LOUSADA") name = "lousada";
     
-    await axios.get(`http://localhost:3001/machine/${name}`).then((response) => {
+    await axios.get(`http://localhost:3001/machine/${name}/${time}`).then((response) => {
       setData(response.data );
     });
     
@@ -137,8 +137,8 @@ export default function MyChart({ selectedMaquina, machine }) {
   useEffect(() => {
   if(selectedMaquina)
    getData(selectedMaquina);
-
-  }, [machine, selectedMaquina]);
+    console.log("Tempo selecionado para tabela", time)
+  }, [machine, selectedMaquina, time]);
 
 
   
@@ -148,7 +148,7 @@ export default function MyChart({ selectedMaquina, machine }) {
         <MaterialTable style={ {boxShadow :"none", border: "none"}}
           minRows={10}
           icons={tableIcons}
-          title={<b style={{background: "red", color: "white"}}>{selectedMaquina}</b>}
+          title={<b style={{background: "#e4181d", padding:"1rem", color: "white", borderRadius:"5rem"}}>{selectedMaquina}</b>}
           data={data}
           columns={columns}
           options={{

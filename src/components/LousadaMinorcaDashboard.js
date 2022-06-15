@@ -44,7 +44,7 @@ class Dashboard extends Component {
       lousada: [],
       minorça: [],
       timeTotal: "",
-      //timePeriod: this.props.currentMode,
+      timePeriod: this.props.currentMode,
       corrente: "",
       velocidade: "",
      // realTime: this.props.realTime,
@@ -639,7 +639,6 @@ class Dashboard extends Component {
   };
 
   renderSelectedMachine= (value)=>{
-
     if (value === "LOUSADA") return true ; 
     if (value === "MINORÇA") return false; 
   }
@@ -659,6 +658,7 @@ class Dashboard extends Component {
           <Tabela
             machine={this.state.machine}
             selectedMaquina={this.props.selectedMaquina}
+            time = {this.props.currentMode}
           />
         </Tab>
       </Tabs>

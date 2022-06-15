@@ -27,6 +27,7 @@ import * as MdIcons from "react-icons/md";
 import * as AiIcons from "react-icons/ai";
 import * as BiIcons from "react-icons/bi";
 import * as TbIcons from "react-icons/tb";
+import * as FaIcons from "react-icons/fa"
 
 import { ApplicationInstance } from "twilio/lib/rest/api/v2010/account/application";
 //import { render } from '@testing-library/react';
@@ -47,7 +48,7 @@ class Dashboard extends Component {
       machine: [],
       machine1: [],
       timeTotal: "",
-      //timePeriod: this.props.currentMode,
+      timePeriod: this.props.currentMode,
       corrente: "",
       velocidade: "",
       //realTime: this.props.realTime,
@@ -623,13 +624,14 @@ class Dashboard extends Component {
         id="uncontrolled-tab-example"
         className="mt-4"
       >
-        <Tab eventKey="grafico" title="GRÁFICO" tabClassName={"tabs"} >
+        <Tab eventKey="grafico" title={<span><FaIcons.FaRegChartBar size={25} color={"#e4181d"} /> GRÁFICO </span>} tabClassName={"tabs"} >
           <MyChart />
         </Tab>
-        <Tab eventKey="dados" title="DADOS" tabClassName={"tabs"}>
+        <Tab eventKey="dados" title={<span><AiIcons.AiFillDatabase size={25} color={"#e4181d"} /> DADOS </span>} tabClassName={"tabs"}>
           <Tabela
             machine={this.state.machine}
             selectedMaquina={this.props.selectedMaquina}
+            time = {this.props.currentMode}
           />
         </Tab>
       </Tabs>

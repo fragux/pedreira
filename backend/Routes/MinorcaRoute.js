@@ -79,7 +79,7 @@ router.get('/machine/minorca/last', (req, res) =>{
 });
 
 router.get('/machine/minorca/start', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `Lousada` WHERE DATE(DateTime) = CURDATE() AND Start = 1 Limit 1";    
+    const sqlSelect = "SELECT * FROM `Minorça` WHERE DATE(DateTime) = CURDATE() AND Start = 1 Limit 1";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -91,8 +91,32 @@ router.get('/machine/minorca/start', (req, res) =>{
     })
 });
 
-router.get('/machine/minorca', (req, res) =>{
-    const sqlSelect = "SELECT * from db.Minorça WHERE Date(DateTime) = CURDATE()";
+router.get('/machine/minorca/dia', (req, res) =>{
+    const sqlSelect = "SELECT * FROM db.Minorça WHERE DATE(DateTime) = CURDATE() ORDER BY DateTime DESC";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+router.get('/machine/minorca/semana', (req, res) =>{
+    const sqlSelect = "SELECT * FROM db.Minorça WHERE DATE(DateTime) >= CURDATE() - INTERVAL 7 DAY";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+router.get('/machine/minorca/mes', (req, res) =>{
+    const sqlSelect = "SELECT * FROM db.Minorça WHERE DATE(DateTime) >= CURDATE() - INTERVAL 30 DAY";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

@@ -13,7 +13,7 @@ const db = mysql.createPool({
 
 //endpoint para CNC - STONECUT45MILL
 
-router.get('/machine/cnc2', (req, res) =>{
+router.get('/machine/cnc2/dia', (req, res) =>{
     const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) = CURDATE() ORDER BY DateTime DESC";
     db.query(sqlSelect, (err, result) =>{
         if (err){
@@ -25,7 +25,30 @@ router.get('/machine/cnc2', (req, res) =>{
         }
     })
 });
-
+router.get('/machine/cnc2/semana', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 7 DAY";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+router.get('/machine/cnc2/mes', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 30 DAY";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
 
 
 router.get('/machine/cnc2/last', (req, res) =>{
