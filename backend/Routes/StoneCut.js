@@ -14,7 +14,7 @@ const db = mysql.createPool({
 //endpoint para CNC - STONECUT
 
 router.get('/machine/cnc1', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC1`";
+    const sqlSelect = "SELECT * FROM `CNC1` WHERE DATE(DateTime) = CURDATE() ORDER BY DateTime DESC";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -41,7 +41,7 @@ router.get('/machine/cnc1/last', (req, res) =>{
 
 
 router.get('/machine/cnc1/job', (req, res) =>{
-    const sqlSelect = "SELECT DateTime, Job, Production, Production - LAG(Production) OVER (PARTITION BY Job ORDER BY DateTime) AS nJob FROM `CNC1` WHERE DATE(DateTime) = CURDATE()  AND Job = 1 AND Production <= 3 ";
+    const sqlSelect = "SELECT DateTime, Job, Production, Production - LAG(Production) OVER (PARTITION BY Job ORDER BY DateTime) AS nJob FROM `CNC1` WHERE DATE(DateTime) = CURDATE()  AND Job = 1 AND Production <= 4 ";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

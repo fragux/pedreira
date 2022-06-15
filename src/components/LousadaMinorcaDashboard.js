@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 //import { Media } from 'reactstrap';
-import { ProgressBar, Badge } from "react-bootstrap";
+import { ProgressBar, Badge, Tabs, Tab } from "react-bootstrap";
 import {
   Card,
   /* CardTitle,
@@ -21,6 +21,7 @@ import Api from "twilio/lib/rest/Api";
 import "./CncComponent.css";
 import XML from "../data/relatorio.xml";
 import XMLParser from "react-xml-parser";
+import Tabela from "./TabelaComponent";
 import * as HiIcons from "react-icons/hi";
 import * as MdIcons from "react-icons/md";
 import * as AiIcons from "react-icons/ai";
@@ -643,6 +644,27 @@ class Dashboard extends Component {
     if (value === "MINORÇA") return false; 
   }
 
+  renderTab = () => {
+    return (
+      <Tabs
+        defaultActiveKey="dados"
+        id="uncontrolled-tab-example"
+        className="mt-4"
+        
+      >
+        <Tab eventKey="grafico" title="GRÁFICO" tabClassName={"tabs"}  >
+          <MyChart />
+        </Tab>
+        <Tab eventKey="dados" title="DADOS" tabClassName={"tabs"}>
+          <Tabela
+            machine={this.state.machine}
+            selectedMaquina={this.props.selectedMaquina}
+          />
+        </Tab>
+      </Tabs>
+    );
+  };
+
   render() {
     //const maquinaValues = this.state.machine;
     // console.log("Array máquina para ser alterado o formato da data--->", machine);
@@ -719,7 +741,7 @@ class Dashboard extends Component {
                   ...{ ["Alarm"]: "Clear" },
                 },
               ]) /*this.renderMachine(this.state.machine?.slice(1))*/
-        } </>:<>
+        }  {this.renderTab()}</>:<>
 
         {
           this.calcIsOffLine(this.state.minorça)
@@ -753,6 +775,7 @@ class Dashboard extends Component {
                 },
               ]) /*this.renderMachine(this.state.machine?.slice(1))*/
         }
+         {this.renderTab()}
       </>
     );
   }

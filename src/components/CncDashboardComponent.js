@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 //import { Media } from 'reactstrap';
-import { ProgressBar, Badge } from "react-bootstrap";
+import { ProgressBar, Badge, Tabs, Tab, Sonnet } from "react-bootstrap";
 import {
   Card,
   /* CardTitle,
@@ -14,6 +14,7 @@ import { DEFAULT } from "../data/default";
 import ListaComponent from './ListaComponent';
 import Menu from './SelectComponent';*/
 import MyChart from "./ChartComponent";
+import Tabela from "./TabelaComponent";
 //import { Chart } from 'react-charts/dist/react-charts.development';
 import "./DashBoardComponent.css";
 import axios from "axios";
@@ -65,7 +66,7 @@ class Dashboard extends Component {
       timeStartCNC2: [],
     };
     this.getData = this.getData.bind(this);
-    
+
     this.handleSelectItem = this.handleSelectItem.bind(this);
     //this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
     //this.randomFunction = this.randomFunction.bind(this);
@@ -74,11 +75,12 @@ class Dashboard extends Component {
     this.handleResponse = this.handleResponse.bind(this);
     this.renderMachine = this.renderMachine.bind(this);
     this.calcJob = this.calcJob.bind(this);
-   // this.convertXmlToJson = this.convertXmlToJson.bind(this);
+    // this.convertXmlToJson = this.convertXmlToJson.bind(this);
     this.calcIsOffLine = this.calcIsOffLine.bind(this);
-    this.calcWork = this. calcWork.bind(this);
+    this.calcWork = this.calcWork.bind(this);
     this.calcTimeStart = this.calcTimeStart.bind(this);
     this.renderSelectedMachine = this.renderSelectedMachine.bind(this);
+    this.renderTab = this.renderTab.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
 
@@ -113,7 +115,6 @@ class Dashboard extends Component {
     this.calcJob();
     //this.convertXmlToJson(XML);
     this.calcIsOffLine();
-    
   }
 
   async componentDidMount() {
@@ -133,65 +134,84 @@ class Dashboard extends Component {
   }
 
   calcWork = (value) => {
-    if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"}/>
-    if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
-    if (value === 2) return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />  
-    if (value === 3) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
-    if (value === 4) return  <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
-    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"} />
-  }
+    if (value === 0)
+      return <AiIcons.AiOutlineStop size={50} color={"#e4181d"} />;
+    if (value === 1)
+      return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />;
+    if (value === 2)
+      return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />;
+    if (value === 3)
+      return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"} />;
+    if (value === 4)
+      return (
+        <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine" />
+      );
+    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"} />;
+  };
 
   calcIsOffLine = (array) => {
     let currentDate = new Date();
     //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = new Boolean();
-    array?.map(({DateTime}) => {
-      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+    array?.map(({ DateTime }) => {
+      console.log(
+        Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13))
+      );
       let diff = currentDate.getTime() - Date.parse(DateTime);
-      let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60
-      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime.toString().substring(0,DateTime.toString().length-5)),"Convertida em minutos: ", vmindiff);
-      console.log( parseInt(DateTime.substring(8,10)));
-      if(vmindiff > 10){
+      let vmindiff = Math.floor(diff / 1000 / 60); // in minutes
+      diff -= vmindiff * 1000 * 60;
+      console.log(
+        "Diferença das datas :",
+        currentDate.getTime() -
+          Date.parse(
+            DateTime.toString().substring(0, DateTime.toString().length - 5)
+          ),
+        "Convertida em minutos: ",
+        vmindiff
+      );
+      console.log(parseInt(DateTime.substring(8, 10)));
+      if (vmindiff > 10) {
         //console.log("Teste para verificar se está offline: ", true);
         result = true;
-      }else result = false;
+      } else result = false;
 
       //return this.setState({isOffline: true});
     });
     return result;
-  }
+  };
 
   calcTimeStart = (array) => {
     let currentDate = new Date();
-    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    currentDate.setTime(
+      currentDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000
+    );
     let result = 0;
     let horas = 0;
     let minutos = 0;
-    result = array?.map(({DateTime}) => {
+    result = array?.map(({ DateTime }) => {
       //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
-      let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60 ;
-      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
-      return (vmindiff); 
+      let vmindiff = Math.floor(diff / 1000 / 60); // in minutes
+      diff -= vmindiff * 1000 * 60;
+      console.log(
+        "Diferença das datas :",
+        currentDate.getTime() - Date.parse(DateTime),
+        "Convertida em minutos: ",
+        vmindiff
+      );
+      return vmindiff;
     });
-    horas = Math.round((result/60));
-    minutos = result -( Math.floor(((result/60) % 2 ) ) *60);
-    minutos = ((((minutos).toFixed(0)/60) % 2)*60).toFixed(0);
-   // console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
-  
-    if (minutos.length === 1){
-      return `${horas}h0${minutos}`
-    }
-    else if (minutos.length === 3){
+    horas = Math.round(result / 60);
+    minutos = result - Math.floor((result / 60) % 2) * 60;
+    minutos = (((minutos.toFixed(0) / 60) % 2) * 60).toFixed(0);
+    // console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
 
-      return `${horas}h${minutos}`
-    }
-    else return (`${horas}h${minutos}`)
-  }
-
-  
+    if (minutos.length === 1) {
+      return `${horas}h0${minutos}`;
+    } else if (minutos.length === 3) {
+      return `${horas}h${minutos}`;
+    } else return `${horas}h${minutos}`;
+  };
 
   handleResponse = (parentData) => {
     this.props.parentCallback(this.state.timeTotal);
@@ -202,8 +222,6 @@ class Dashboard extends Component {
     const maquinaValues = this.renderSwitch(parentData);
     console.log(maquinaValues.maquina);
   };
-
- 
 
   handleSelectItem(key, dashboardItem) {
     console.log("Dashboard button:", dashboardItem);
@@ -388,19 +406,20 @@ class Dashboard extends Component {
   };
 
   calcJob = (array) => {
-      const initialValue = 0;
-      var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
+    const initialValue = 0;
+    var result = array?.reduce(
+      (previousData, currentData) => (previousData - currentData) % 5,
+      initialValue
     );
-        
-        console.log("Calculo dos trabalhos realizados: ", result);
-        return array;
+
+    console.log("Calculo dos trabalhos realizados: ", result);
+    return array;
   };
 
-  renderSelectedMachine= (value)=>{
-
-    if (value === "STONECUT") return true ; 
-    if (value === "STONECUT45MILL") return false; 
-  }
+  renderSelectedMachine = (value) => {
+    if (value === "STONECUT") return true;
+    if (value === "STONECUT45MILL") return false;
+  };
 
   renderMachine = (machine) => {
     let currentDate = new Date();
@@ -429,7 +448,7 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  { Job === 4  || Job === 3 ? "Standby" : Power}
+                  {Job === 4 || Job === 3 ? "Standby" : Power}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
@@ -481,8 +500,9 @@ class Dashboard extends Component {
                       return DateTime.toString().substring(14, 16);
                     })).toString()*/}
 
-                    {(Type === "stonecut") ? this.calcTimeStart(this.state.timeStartCNC1) : this.calcTimeStart(this.state.timeStartCNC2) }
-                  
+                  {Type === "stonecut"
+                    ? this.calcTimeStart(this.state.timeStartCNC1)
+                    : this.calcTimeStart(this.state.timeStartCNC2)}
                 </h2>
                 <h6>
                   Start:{" "}
@@ -503,9 +523,8 @@ class Dashboard extends Component {
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
                   (Production === 100 ? " blinkDone" : " ")
-                  
                 }
-                style={{maxWidth:"100%", minWidth:"320px", float:"left"}}
+                style={{ maxWidth: "100%", minWidth: "320px", float: "left" }}
               >
                 <h6>Produção</h6>
                 <span className="badgeWork">
@@ -544,7 +563,13 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{Alarm !=="Clear" ? this.calcWork(4) : (Job === 4) ? this.calcWork(5) : this.calcWork(Job)}</h1>
+                <h1 style={{ color: "#333" }}>
+                  {Alarm !== "Clear"
+                    ? this.calcWork(4)
+                    : Job === 4
+                    ? this.calcWork(5)
+                    : this.calcWork(Job)}
+                </h1>
                 <h6>Estado</h6>
               </Card>
               <Card
@@ -570,7 +595,9 @@ class Dashboard extends Component {
               >
                 <h6>Alarme</h6>
                 {Alarm.length > 6 ? (
-                  <h4 style={{ color: "#333", fontSize: 10 }}>{Alarm.substring(5,Alarm.length)}</h4>
+                  <h4 style={{ color: "#333", fontSize: 10 }}>
+                    {Alarm.substring(5, Alarm.length)}
+                  </h4>
                 ) : (
                   <h1 style={{ color: "#333" }}>{Alarm}</h1>
                 )}
@@ -589,30 +616,88 @@ class Dashboard extends Component {
     );
   };
 
-  render() {
-    
+  renderTab = () => {
     return (
-     this.renderSelectedMachine(this.props.selectedMaquina) ?
-     <>
-     {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          Production: 0,
-          Tension: 0
-        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
-</>:<>
-        {(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT45MILL",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
-          Production: 0,
-          Tension: 0
-        }]) : this.renderMachine(this.state.machine1)/*this.renderMachine(this.state.machine?.slice(1))*/}
+      <Tabs
+        defaultActiveKey="dados"
+        id="uncontrolled-tab-example"
+        className="mt-4"
+      >
+        <Tab eventKey="grafico" title="GRÁFICO" tabClassName={"tabs"} >
+          <MyChart />
+        </Tab>
+        <Tab eventKey="dados" title="DADOS" tabClassName={"tabs"}>
+          <Tabela
+            machine={this.state.machine}
+            selectedMaquina={this.props.selectedMaquina}
+          />
+        </Tab>
+      </Tabs>
+    );
+  };
+
+  render() {
+    return this.renderSelectedMachine(this.props.selectedMaquina) ? (
+      <>
+        {
+          this.calcIsOffLine(this.state.machine)
+            ? this.renderMachine([
+                {
+                  DateTime: new Date(),
+                  Alarm: (
+                    <HiIcons.HiOutlineStatusOffline
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  Type: "STONECUT",
+                  Job: 0,
+                  Power: (
+                    <MdIcons.MdOutlinePowerOff
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  Production: 0,
+                  Tension: 0,
+                },
+              ])
+            : this.renderMachine(
+                this.state.machine
+              ) /*this.renderMachine(this.state.machine?.slice(1))*/
+        }
+        {this.renderTab()}
+      </>
+    ) : (
+      <>
+        {
+          this.calcIsOffLine(this.state.machine1)
+            ? this.renderMachine([
+                {
+                  DateTime: new Date(),
+                  Alarm: (
+                    <HiIcons.HiOutlineStatusOffline
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  Type: "STONECUT45MILL",
+                  Job: 0,
+                  Power: (
+                    <MdIcons.MdOutlinePowerOff
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  Production: 0,
+                  Tension: 0,
+                },
+              ])
+            : this.renderMachine(
+                this.state.machine1
+              ) /*this.renderMachine(this.state.machine?.slice(1))*/
+        }
+        {this.renderTab()}
       </>
     );
   }

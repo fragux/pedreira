@@ -88,3 +88,12 @@
    border: none;
  }
   
+  /* NEW ADDED PART (START) */
+.tabs {
+   color: #575757 !important;
+   margin-left: 2rem;
+}
+
+.tabs:active {
+   color: #720d0d !important;
+}

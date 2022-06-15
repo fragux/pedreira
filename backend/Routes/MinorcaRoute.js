@@ -91,4 +91,17 @@ router.get('/machine/minorca/start', (req, res) =>{
     })
 });
 
+router.get('/machine/minorca', (req, res) =>{
+    const sqlSelect = "SELECT * from db.Minorça WHERE Date(DateTime) = CURDATE()";
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
 module.exports = (router);
