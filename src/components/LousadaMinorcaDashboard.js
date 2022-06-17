@@ -26,6 +26,7 @@ import * as HiIcons from "react-icons/hi";
 import * as MdIcons from "react-icons/md";
 import * as AiIcons from "react-icons/ai";
 import * as BiIcons from "react-icons/bi";
+import * as FaIcons from "react-icons/fa";
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
@@ -651,14 +652,23 @@ class Dashboard extends Component {
         className="mt-4"
         
       >
-        <Tab eventKey="grafico" title="GRÁFICO" tabClassName={"tabs"}  >
+        <Tab eventKey="grafico" title={<span><FaIcons.FaRegChartBar size={25} color={"#e4181d"} /> GRÁFICO </span>} tabClassName={"tabs"} >
           <MyChart />
         </Tab>
-        <Tab eventKey="dados" title="DADOS" tabClassName={"tabs"}>
+        <Tab eventKey="dados" title={<span><AiIcons.AiFillDatabase size={25} color={"#e4181d"} /> DADOS </span>} tabClassName={"tabs"}>
           <Tabela
             machine={this.state.machine}
             selectedMaquina={this.props.selectedMaquina}
             time = {this.props.currentMode}
+            erros = {false}
+          />
+        </Tab>
+        <Tab eventKey="erros" title={<span><BiIcons.BiError size={25} color={"#e4181d"} /> ERROS </span>} tabClassName={"tabs"} >
+        <Tabela
+            machine={this.state.machine}
+            selectedMaquina={this.props.selectedMaquina}
+            time = {this.props.currentMode}
+            erros = {true}
           />
         </Tab>
       </Tabs>

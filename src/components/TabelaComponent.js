@@ -3,6 +3,8 @@ import { Card, Modal, ModalHeader, ModalBody } from "reactstrap";
 import { Chart } from "react-charts";
 import "./TabelaComponent.css";
 import MaterialTable from "material-table";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import axios from "axios";
 import { ProgressBar } from "react-bootstrap";
 import {
@@ -37,9 +39,8 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
       type: "datetime",
       dateSetting: {
         format: "dd/MM/yyyy",
-        locale: "pt-PT"
+        locale: "pt-PT",
       },
-      
     },
     {
       title: "Power",
@@ -49,7 +50,7 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
       title: "Produção",
       field: "Production",
       render: (rowData) => {
-        if (rowData.Production < 30 )
+        if (rowData.Production < 30)
           return (
             <ProgressBar
               variant="danger"
@@ -85,7 +86,44 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
     {
       title: "Tensão",
       field: "Tension",
-      render: (rowData) => { return (<b>{Math.round(rowData.Tension)}</b>)}
+      render: (rowData) => {
+        return <b>{Math.round(rowData.Tension)}</b>;
+      },
+    },
+    {
+      title: "Alarme",
+      field: "Alarm",
+    },
+  ];
+
+  const columnsToPDF = [
+    {
+      title: "Data",
+      field: "DateTime",
+      type: "datetime",
+      dateSetting: {
+        format: "dd/MM/yyyy",
+        locale: "pt-PT",
+      },
+    },
+    {
+      title: "Power",
+      field: "Power",
+    },
+    {
+      title: "Produção",
+      field: "Production",
+    },
+    {
+      title: "Trabalho",
+      field: "Job",
+    },
+    {
+      title: "Tensão",
+      field: "Tension",
+      render: (rowData) => {
+        return <b>{Math.round(rowData.Tension)}</b>;
+      },
     },
     {
       title: "Alarme",
@@ -121,44 +159,56 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
   };
 
-  const [data, setData ] = useState();
-  
-  async function getData(name){
+  const [data, setData] = useState();
+
+  async function getData(name) {
     if (name === "STONECUT") name = "cnc1";
     else if (name === "STONECUT45MILL") name = "cnc2";
     else if (name === "MINORÇA") name = "minorca";
     else if (name === "LOUSADA") name = "lousada";
-    
-    if(erros === false){
-      await axios.get(`http://localhost:3001/machine/${name}/${time}`).then((response) => {
-        setData(response.data );
-      });
-    }
-    else if (erros)
-    await axios.get(`http://localhost:3001/machine/${name}/alarms/${time}`).then((response) => {
-      setData(response.data );
-    });
-    
+
+    if (erros === false) {
+      await axios
+        .get(`http://localhost:3001/machine/${name}/${time}`)
+        .then((response) => {
+          setData(response.data);
+        });
+    } else if (erros)
+      await axios
+        .get(`http://localhost:3001/machine/${name}/alarms/${time}`)
+        .then((response) => {
+          setData(response.data);
+          //erros = false;
+        });
   }
   useEffect(() => {
-  if(selectedMaquina)
-   getData(selectedMaquina);
-    console.log("Tempo selecionado para tabela", time)
+    if (selectedMaquina) getData(selectedMaquina);
+    console.log("Tempo selecionado para tabela", time);
   }, [machine, selectedMaquina, time, erros]);
 
-
-  
   return (
     <>
-      <div className="container-tabela" >
-        <MaterialTable style={ {boxShadow :"none", border: "none"}}
+      <div className="container-tabela">
+        <MaterialTable
+          style={{ boxShadow: "none", border: "none" }}
           minRows={10}
           icons={tableIcons}
-          title={<b style={{background: "#e4181d", padding:"1rem", color: "white", borderRadius:"5rem"}}>{selectedMaquina}</b>}
-          data= {data}
+          title={
+            <b
+              style={{
+                background: "#e4181d",
+                padding: "1rem",
+                color: "white",
+                borderRadius: "5rem",
+              }}
+            >
+              {selectedMaquina}
+            </b>
+          }
+          data={data}
           columns={columns}
           options={{
-            pageSize: 8,
+            pageSize: 9,
             pageSizeOptions: [5, 10, 20, 50, 100],
             rowStyle: {
               fontSize: 14,
@@ -175,11 +225,49 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
               background: "",
               fontSizeAdjust: true,
             },
+
+            exportButton: {
+              csv: true,
+              pdf: true,
+            },
             //filtering: true,
             paging: true,
             search: true,
-            exportButton: true,
             addRowPosition: true,
+            exportPdf: () => {
+              const doc = new jsPDF();
+              let currentDate = new Date();
+
+              const columnTitles = columnsToPDF.map((columnDef) => ({
+                ...columnDef,
+                dataKey: columnDef.title,
+              }));
+
+              const pdfData = data.map((rowData) =>
+                columns.map((columnDef) => rowData[columnDef.field])
+              );
+              doc
+                .text(
+                  `OliveiraRodrigues_${selectedMaquina}_${currentDate.getDate()}-${
+                    currentDate.getMonth(currentDate) + 1
+                  }-${currentDate.getFullYear()}`,
+                  12,
+                  10
+                )
+                .setFontSize(8)
+                .setFont(undefined, "normal");
+              doc.autoTable({
+                head: [columnTitles],
+                body: pdfData,
+                headStyles: { fillColor: [228, 24, 29] },
+              });
+
+              doc.save(
+                `data_${selectedMaquina}_${currentDate.getDate()}-${
+                  currentDate.getMonth(currentDate) + 1
+                }-${currentDate.getFullYear()}.pdf`
+              );
+            },
           }}
         />
       </div>

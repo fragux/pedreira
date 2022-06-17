@@ -65,7 +65,7 @@ router.get('/machine/cnc2/last', (req, res) =>{
 });
 
 router.get('/machine/cnc2/job', (req, res) =>{
-    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production <=4";
+    const sqlSelect = "SELECT DateTime, Job, Production FROM `CNC2` WHERE DATE(DateTime) = CURDATE() AND Job = 1 AND Production > 0 AND  Production <=4";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -91,7 +91,7 @@ router.get('/machine/cnc2/start', (req, res) =>{
 });
 
 router.get('/machine/cnc2/alarms/dia', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC1` WHERE DATE(DateTime) = CURDATE () AND Alarm <> 'Clear' ORDER BY DateTime DESC";    
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) = CURDATE () AND Alarm <> 'Clear' AND Alarm <> '' ORDER BY DateTime DESC";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -104,7 +104,7 @@ router.get('/machine/cnc2/alarms/dia', (req, res) =>{
 });
 
 router.get('/machine/cnc2/alarms/semana', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 7 DAY AND Alarm <> 'Clear' ORDER BY DateTime DESC";    
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 7 DAY AND Alarm <> 'Clear' AND Alarm <> '' ORDER BY DateTime DESC";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);
@@ -116,7 +116,7 @@ router.get('/machine/cnc2/alarms/semana', (req, res) =>{
     })
 });
 router.get('/machine/cnc2/alarms/mes', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 30 DAY AND Alarm <> 'Clear' ORDER BY DateTime DESC";    
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 30 DAY AND Alarm <> 'Clear' AND Alarm <> '' ORDER BY DateTime DESC";    
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

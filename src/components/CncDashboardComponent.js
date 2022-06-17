@@ -435,13 +435,13 @@ class Dashboard extends Component {
                   (Job === 4 || Job === 3 ? "blinkIdle" : "")
                 }
                 style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
-                onClick={() => this.handleSelectItem(1, "none")}
+               // onClick={() => this.handleSelectItem(1, "none")}
               >
                 <h5>{Type.toString().toUpperCase()}</h5>
               </Card>
               <Card
                 eventkey={2}
-                onClick={() => this.handleSelectItem(2, "corrente")}
+                //onClick={() => this.handleSelectItem(2, "corrente")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "corrente" ? " active" : " ")
@@ -465,7 +465,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={7}
-                onClick={() => this.handleSelectItem(1, "tempo")}
+                //onClick={() => this.handleSelectItem(1, "tempo")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "tempo" ? " active" : " ")
@@ -520,7 +520,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={1}
-                onClick={() => this.handleSelectItem(1, "pecas")}
+               // onClick={() => this.handleSelectItem(1, "pecas")}
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
                   (Production === 100 ? " blinkDone" : " ")
@@ -557,7 +557,7 @@ class Dashboard extends Component {
 
               <Card
                 eventkey={3}
-                onClick={() => this.handleSelectItem(3, "horas")}
+               // onClick={() => this.handleSelectItem(3, "horas")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "horas" ? " active" : "")
@@ -575,7 +575,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={4}
-                onClick={() => this.handleSelectItem(4, "agua")}
+                //onClick={() => this.handleSelectItem(4, "agua")}
                 className={
                   "card-box-header" +
                   (this.currentItem === "agua" ? " active" : "")
@@ -589,7 +589,7 @@ class Dashboard extends Component {
               </Card>
               <Card
                 eventkey={5}
-                onClick={() => this.handleSelectItem(5, "velocidade")}
+                //onClick={() => this.handleSelectItem(5, "velocidade")}
                 className={
                   "card-box-header" + (Alarm !== "Clear" ? " blink" : " ")
                 }
@@ -625,7 +625,10 @@ class Dashboard extends Component {
         className="mt-4"
       >
         <Tab eventKey="grafico" title={<span><FaIcons.FaRegChartBar size={25} color={"#e4181d"} /> GRÁFICO </span>} tabClassName={"tabs"} >
-          <MyChart />
+          <MyChart 
+            //machine={this.state.machine}
+            //selectedMaquina={this.props.selectedMaquina} 
+            />
         </Tab>
         <Tab eventKey="dados" title={<span><AiIcons.AiFillDatabase size={25} color={"#e4181d"} /> DADOS </span>} tabClassName={"tabs"}>
           <Tabela
