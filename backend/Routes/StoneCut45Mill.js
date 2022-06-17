@@ -90,5 +90,42 @@ router.get('/machine/cnc2/start', (req, res) =>{
     })
 });
 
+router.get('/machine/cnc2/alarms/dia', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC1` WHERE DATE(DateTime) = CURDATE () AND Alarm <> 'Clear' ORDER BY DateTime DESC";    
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
+router.get('/machine/cnc2/alarms/semana', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 7 DAY AND Alarm <> 'Clear' ORDER BY DateTime DESC";    
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+router.get('/machine/cnc2/alarms/mes', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `CNC2` WHERE DATE(DateTime) >= CURDATE() - INTERVAL 30 DAY AND Alarm <> 'Clear' ORDER BY DateTime DESC";    
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
 
 module.exports = (router);

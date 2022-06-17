@@ -632,6 +632,15 @@ class Dashboard extends Component {
             machine={this.state.machine}
             selectedMaquina={this.props.selectedMaquina}
             time = {this.props.currentMode}
+            erros = {false}
+          />
+        </Tab>
+        <Tab eventKey="erros" title={<span><BiIcons.BiError size={25} color={"#e4181d"} /> ERROS </span>} tabClassName={"tabs"} >
+        <Tabela
+            machine={this.state.machine}
+            selectedMaquina={this.props.selectedMaquina}
+            time = {this.props.currentMode}
+            erros = {true}
           />
         </Tab>
       </Tabs>

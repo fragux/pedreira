@@ -75,6 +75,19 @@ router.get('/machine/lousada/start', (req, res) =>{
     })
 });
 
+router.get('/machine/lousada/alarms', (req, res) =>{
+    const sqlSelect = "SELECT * FROM `db.LousadaAlarms` WHERE * <> 0 ";    
+    db.query(sqlSelect, (err, result) =>{
+        if (err){
+            console.log(err);
+        }
+        else {
+            res.send(result);
+            console.log(result);
+        }
+    })
+});
+
 
 
 module.exports = (router);
