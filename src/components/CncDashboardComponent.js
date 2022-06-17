@@ -13,7 +13,8 @@ import { DEFAULT } from "../data/default";
 /*import DropdownMaquina from './DropDownMaquina';
 import ListaComponent from './ListaComponent';
 import Menu from './SelectComponent';*/
-import MyChart from "./ChartComponent";
+//import MyChart from "./ChartComponent";
+import Grafico from "./Grafico";
 import Tabela from "./TabelaComponent";
 //import { Chart } from 'react-charts/dist/react-charts.development';
 import "./DashBoardComponent.css";
@@ -625,9 +626,10 @@ class Dashboard extends Component {
         className="mt-4"
       >
         <Tab eventKey="grafico" title={<span><FaIcons.FaRegChartBar size={25} color={"#e4181d"} /> GRÁFICO </span>} tabClassName={"tabs"} >
-          <MyChart 
-            //machine={this.state.machine}
-            //selectedMaquina={this.props.selectedMaquina} 
+          <Grafico
+            machine={this.state.machine}
+            selectedMaquina={this.props.selectedMaquina}
+            time = {this.props.currentMode}
             />
         </Tab>
         <Tab eventKey="dados" title={<span><AiIcons.AiFillDatabase size={25} color={"#e4181d"} /> DADOS </span>} tabClassName={"tabs"}>
