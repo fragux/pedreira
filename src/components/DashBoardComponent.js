@@ -87,7 +87,7 @@ class Dashboard extends Component {
             velocidade: this.randomFunction(),
           };
         });
-    }, 10500);
+    }, 15000500);
   }
 
   handleResponse = (parentData) => {
@@ -246,7 +246,7 @@ class Dashboard extends Component {
         //função para enviar notificação via Whatsapp
         //const message = `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`;
         const date = new Date();
-        axios.post("http://localhost:3001/sendnotification", {
+       /* axios.post("http://localhost:3001/sendnotification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
 

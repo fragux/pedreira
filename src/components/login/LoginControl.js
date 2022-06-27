@@ -15,7 +15,7 @@ class LoginControl extends React.Component {
     this.state = {
       users: [
         //{ username: "Admin", password: "ORodrigues.2021" },
-        { username: "", password: "" }
+        { username: "Oliveira", password: "OR.2122" }
       ],
       welcomeConnect: false,
       trueUsername: "",

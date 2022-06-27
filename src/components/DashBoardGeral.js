@@ -84,7 +84,7 @@ class DashboardGeral extends Component {
             velocidade: this.randomFunction(),
           };
         });
-    }, 2500);
+    }, 222500);
   }
 
   handleResponse = (parentData) => {
@@ -231,7 +231,7 @@ class DashboardGeral extends Component {
       this.state.statusVelocidade = true;
       this.counterVelocidade++;
     }
-    if (this.props.realTime)
+    /*if (this.props.realTime)
       if (this.counterVelocidade > 10 && this.state.realTime) {
         this.counterVelocidade = 0;
         alert(
@@ -254,14 +254,14 @@ class DashboardGeral extends Component {
             " está com rotação elevada: " +
             `${Math.round(rand)}` +
             "\nVerifique a máquina!!!",
-        });
+        });*/
         /* client.messages.create({
                         from: 'whatsapp:+315937012912',
                         to: 'whatsapp:+351937012912',
                         body: `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`
-                    }).then(message => console.log(message.sid));*/
+                    }).then(message => console.log(message.sid));
       }
-    return Math.round(rand);
+    return Math.round(rand);*/
   };
 
   randomFunctionCorrente = () => {

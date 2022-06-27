@@ -10,6 +10,7 @@ import CNCDashBoard from "./CncDashboardComponent";
 import LousadaMinorcaDashBoard from "./LousadaMinorcaDashboard";
 import "./DashBoardComponent.css";
 import Sidebar from "./Sidebar";
+import LoadingSpinner from "./LoadingSpinner";
 
 class Machine extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ class Machine extends Component {
       api: "",
       endpoint: "",
       realTime: false,
+      isLoading: false
     };
     //this.renderMaquina = this.renderMaquina.bind(this);
     this.handleTimeback = this.handleTimeback.bind(this);
@@ -105,12 +107,14 @@ renderTimeTotal(parentData){
 }*/
 
   async componentDidMount() {
-    this.setState({
+    setInterval( () => this.setState({
       timePeriod: this.state.timePeriod,
       realTime: this.state.realTime,
-    });
-    return;
+      isLoading: false
+    }), 1000)
+    this.setState({isLoading: true});
   }
+
   handdleDashboard(value) {
     console.log("HANDLE DASHBOARD", value);
     switch (value) {
@@ -196,7 +200,7 @@ renderTimeTotal(parentData){
               </header>
             </div>
             <div className="container-body">
-              {this.handdleDashboard(this.state.machine)}
+              {this.state.isLoading ? <LoadingSpinner /> : this.handdleDashboard(this.state.machine)}
             </div>
           </div>
         </div>

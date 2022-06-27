@@ -30,6 +30,7 @@ import * as AiIcons from "react-icons/ai";
 import * as HiIcons from "react-icons/hi";
 import Machine from "./MachineComponent";
 import { getDatasetAtEvent } from "react-chartjs-2";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function MyChart({ selectedMaquina, machine, time, erros }) {
   const columns = [
@@ -160,24 +161,27 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
   };
 
   const [data, setData] = useState();
+  const [isLoading,setIsLoading]=useState(false);
 
   async function getData(name) {
     if (name === "STONECUT") name = "cnc1";
     else if (name === "STONECUT45MILL") name = "cnc2";
     else if (name === "MINORÇA") name = "minorca";
     else if (name === "LOUSADA") name = "lousada";
-
+    setIsLoading(true);
     if (erros === false) {
       await axios
         .get(`http://localhost:3001/machine/${name}/${time}`)
         .then((response) => {
           setData(response.data);
+          setIsLoading(false);
         });
     } else if (erros)
       await axios
         .get(`http://localhost:3001/machine/${name}/alarms/${time}`)
         .then((response) => {
           setData(response.data);
+          setIsLoading(false);
           //erros = false;
         });
   }
@@ -189,6 +193,7 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
   return (
     <>
       <div className="container-tabela">
+        {isLoading ? <LoadingSpinner/> :
         <MaterialTable
           style={{ boxShadow: "none", border: "none" }}
           minRows={10}
@@ -269,7 +274,7 @@ export default function MyChart({ selectedMaquina, machine, time, erros }) {
               );
             },
           }}
-        />
+        />}
       </div>
     </>
   );

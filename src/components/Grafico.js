@@ -2,27 +2,25 @@ import React, { useEffect, useState, forwardRef } from "react";
 import { Card, Modal, ModalHeader, ModalBody } from "reactstrap";
 import { Chart } from "react-charts";
 import "./ChartComponent.css";
-import  axios from "axios";
+import axios from "axios";
 import { FlexFlowContext } from "twilio/lib/rest/flexApi/v1/flexFlow";
 import * as BsIcons from "react-icons/bs";
 import * as AiIcons from "react-icons/ai";
 import * as HiIcons from "react-icons/hi";
 import Machine from "./MachineComponent";
+import "./Grafico.css"
+import LoadingSpinner from "./LoadingSpinner";
 
-export default function MyChart({
-  machine,
-  selectedMaquina,
-  time
-}) {
- 
+export default function MyChart({ machine, selectedMaquina, time }) {
   function tempo() {
     if (maquina.length <= 8) return "Hora ";
     else return "Dia ";
   }
 
-  const [active = "Linhas", setActive] = useState();
+  const [active, setActive] = useState();
   const [isModalOpen, setModal] = useState(false);
   const [maquina, setMaquina] = useState([]);
+  const [isLoading,setIsLoading]=useState(false);
 
   //const [maquinaChart, setMaquinaChart] = useState(machine);
   console.log("Botão toggle: ", active);
@@ -33,20 +31,22 @@ export default function MyChart({
   //let rand =  min + (Math.random() * (max-min));
   let x = 1;
   if (machine) {
-     const maquina = machine.map((rowData) => rowData["Tension"])   
-     console.log("dados para o gráfico: ", maquina);
+    const maquina = machine.map((rowData) => rowData["Tension"]);
+    console.log("dados para o gráfico: ", maquina);
   }
-
 
   const data = React.useMemo(
     () => [
       {
-        label: "Tensão",
-        data:  maquina.map(({ Tension }) => {
+        label: "Tensão (V)",
+        data: maquina
+          .slice(0)
+          .reverse()
+          .map(({ DateTime, Tension }) => {
             return {
-              x: x++,
+              x: new Date(DateTime.substr(0,16)).getTime(),
               y: Tension,
-              label: "Tensão",
+              label: "Tempo",
             };
           }),
       },
@@ -69,11 +69,13 @@ export default function MyChart({
       return [
         {
           primary: true,
-          type: "linear",
+          type: "time",
           position: "bottom",
-          //format: (d) => `${tempo()}${d}`,
+          //dataType: "time",
+          //value:(d) => Date(d).toString().substring(15,21)
+          format: (d) => (d)//.toString().substring(15,21), //`${Date(d)}`,
         },
-        { type: "linear", position: "left", stacked: false },
+        { type: "linear", position: "left", stacked: false, format: (d) => `${d} V` },
       ];
     /*else
       return [
@@ -126,36 +128,37 @@ export default function MyChart({
     () => ({
       width: "auto",
       height: "50vh",
-      right: "1rem",
-      top: "2rem",
+      //right: "1rem",
+      //top: "2rem",
       position: "relative",
       overflow: "visible",
-      display: "inline-flex",
+      display: "inline-block",
       placeItems: "center",
-      paddingLeft: "1.5rem",
+      justifyContent: "center",
+      textAlign: "center",
+      //padding: "1.5rem",
     }),
-    [useEffect]
+    []
   );
 
   const getSeriesStyle = React.useCallback(
     () => ({
-      transition: "all .5s ease",
+      //transition: "all .5s ease",
       color: "gray",
     }),
     [maquina, useState([])]
   );
 
   const getDatumStyle = React.useCallback(() => {
-    if (selectedMaquina)
+    if (selectedMaquina && time === "dia")
       return {
         transition: "all .5s ease",
         color: "#E4181D",
       };
-    /*else
+    else
       return {
-        transition: "all .5s ease",
-        color: "#bbbaba",
-      };*/
+        color: "#E4181D",
+      };
   }, [maquina, useState([])]);
 
   function handleCheckbox(e) {
@@ -167,9 +170,6 @@ export default function MyChart({
   /* function handleTime(e){
         const checked = e.target.checked;
       }*/
-
- 
-
 
   /*function legendaGrafico() {
     switch (currentItemChart) {
@@ -194,14 +194,13 @@ export default function MyChart({
     else if (name === "STONECUT45MILL") name = "cnc2";
     else if (name === "MINORÇA") name = "minorca";
     else if (name === "LOUSADA") name = "lousada";
-
-   
-      await axios
-        .get(`http://localhost:3001/machine/${name}/${time}`)
-        .then((response) => {
-          setMaquina(response.data);
-        });
-   
+    setIsLoading(true);
+    await axios
+      .get(`http://localhost:3001/machine/${name}/${time}`)
+      .then((response) => {
+        setMaquina(response.data);
+        setIsLoading(false);
+      });
   }
 
   useEffect(() => {
@@ -209,22 +208,23 @@ export default function MyChart({
     console.log("Tempo selecionado para tabela", time);
   }, [machine, selectedMaquina, time]);
 
- 
   return (
     <>
-      <div className="container col-12">
-       
-         <Chart
-            data={data}
-            getSeriesStyle={getSeriesStyle}
-            getDatumStyle={getDatumStyle}
-            tooltip
-            axes={axes}
-            series={active}
-            style={style}
-          />
-        </div>
-       
+      <div className="container col-12" style={{border:"none", display:"inline-block", padding:"20px 0"}}>
+        {isLoading ? <LoadingSpinner/> : <Chart
+          data={data}
+          getSeriesStyle={getSeriesStyle}
+          getDatumStyle={getDatumStyle}
+          axes={axes}
+          tooltip
+          series={line}
+          style={style}
+          options={{
+           
+          }}
+        />}
+      </div>
+      
     </>
   );
 }

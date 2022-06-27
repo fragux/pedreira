@@ -28,7 +28,8 @@ import * as MdIcons from "react-icons/md";
 import * as AiIcons from "react-icons/ai";
 import * as BiIcons from "react-icons/bi";
 import * as TbIcons from "react-icons/tb";
-import * as FaIcons from "react-icons/fa"
+import * as FaIcons from "react-icons/fa";
+import LoadingSpinner from "./LoadingSpinner";
 
 import { ApplicationInstance } from "twilio/lib/rest/api/v2010/account/application";
 //import { render } from '@testing-library/react';
@@ -66,6 +67,8 @@ class Dashboard extends Component {
       resultXML: "",
       timeStartCNC1: [],
       timeStartCNC2: [],
+      isLoading: false,
+      triggerAlarm: false,
     };
     this.getData = this.getData.bind(this);
 
@@ -121,6 +124,15 @@ class Dashboard extends Component {
 
   async componentDidMount() {
     this.getData();
+
+   
+      setInterval( () => this.setState({
+        timePeriod: this.state.timePeriod,
+        realTime: this.state.realTime,
+        isLoading: false
+      }), 1000)
+      this.setState({isLoading: true});
+   
     setInterval(() => {
       this.getData();
       this.render();
@@ -341,22 +353,10 @@ class Dashboard extends Component {
     }
   }
 
-  randomFunction = () => {
-    var min = 1900;
-    var max = 2200;
-    let rand = min + Math.random() * (min - max);
-    if (rand > 1850) {
-      this.state.statusVelocidade = true;
-      this.counterVelocidade++;
-    }
-    if (this.props.realTime)
-      if (this.counterVelocidade > 10 && this.state.realTime) {
-        this.counterVelocidade = 0;
-        alert(
-          `Velocidade em rotação crítica!!!!\nVelocidade: ${Math.round(
-            rand
-          )}RPM\nMensagem enviada para o telemóvel`
-        );
+  /*alarmTriggerFunction = (array) => {
+    
+    if (this.state.triggerAlarm && array.Alarm !== 'Clear')
+       
         //função para enviar notificação via Whatsapp
         //const message = `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`;
         const date = new Date();
@@ -368,8 +368,8 @@ class Dashboard extends Component {
             "WARNING!!!\n" +
             `${date}` +
             "\nA máquina: " +
-            `${this.props.selectedMaquina}` +
-            " está com rotação elevada: " +
+            `${array.Type}` +
+            " está com erro: " +
             `${Math.round(rand)}` +
             "\nVerifique a máquina!!!",
         });
@@ -377,10 +377,9 @@ class Dashboard extends Component {
                 from: 'whatsapp:+315937012912',
                 to: 'whatsapp:+351937012912',
                 body: `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`
-            }).then(message => console.log(message.sid));*/
+            }).then(message => console.log(message.sid));
       }
-    return Math.round(rand);
-  };
+  };*/
 
   randomFunctionCorrente = () => {
     var min = 15;
