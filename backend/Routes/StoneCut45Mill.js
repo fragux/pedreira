@@ -52,7 +52,7 @@ router.get('/machine/cnc2/mes', (req, res) =>{
 
 
 router.get('/machine/cnc2/last', (req, res) =>{
-    const sqlSelect = "SELECT * FROM `CNC2` ORDER BY `DateTime` DESC LIMIT 1";
+    const sqlSelect = "SELECT * FROM CNC2  WHERE DateTime > curdate() ORDER BY DateTime Desc Limit 1";
     db.query(sqlSelect, (err, result) =>{
         if (err){
             console.log(err);

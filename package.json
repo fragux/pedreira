@@ -2,6 +2,7 @@
   "name": "oliveira-rodrigues-dashboard",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@babel/core": "^7.13.0",
     "@material-table/exporters": "^1.0.12",

@@ -606,7 +606,7 @@ class Dashboard extends Component {
     
     return (
       <>
-        {(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
+        {!(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
           DateTime: new Date(),
           Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
           Type: "STONECUT",
@@ -616,7 +616,7 @@ class Dashboard extends Component {
           Tension: 0
         }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
 
-        {(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
+        {!(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
           DateTime: new Date(),
           Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
           Type: "STONECUT45MILL",

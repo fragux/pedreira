@@ -721,7 +721,7 @@ class Dashboard extends Component {
       this.renderSelectedMachine(this.props.selectedMaquina) ?
       <>
         {
-          this.calcIsOffLine(this.state.lousada)
+          !this.calcIsOffLine(this.state.lousada)
             ? this.renderMachine([
                 {
                   DateTime: new Date(),
@@ -754,7 +754,7 @@ class Dashboard extends Component {
         }  {this.renderTab()}</>:<>
 
         {
-          this.calcIsOffLine(this.state.minorça)
+          !this.calcIsOffLine(this.state.minorça)
             ? this.renderMachine([
                 {
                   DateTime: new Date(),

@@ -681,7 +681,7 @@ class Dashboard extends Component {
     return (
       <>
         {
-          this.calcIsOffLine(this.state.lousada)
+          !this.calcIsOffLine(this.state.lousada)
             ? this.renderMachine([
                 {
                   DateTime: new Date(),
@@ -714,7 +714,7 @@ class Dashboard extends Component {
         }
 
         {
-          this.calcIsOffLine(this.state.minorça)
+          !this.calcIsOffLine(this.state.minorça)
             ? this.renderMachine([
                 {
                   DateTime: new Date(),
