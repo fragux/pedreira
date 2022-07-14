@@ -70,7 +70,7 @@ class Stonecut45mill extends Component {
 
     this.handleSelectItem = this.handleSelectItem.bind(this);
     //this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
-    //this.randomFunction = this.randomFunction.bind(this);
+    this.randomFunction = this.randomFunction.bind(this);
     //this.randomFunctionKw = this.randomFunctionKw.bind(this);
     this.props.parentCallback(this.state.timeTotal);
     this.handleResponse = this.handleResponse.bind(this);
@@ -380,6 +380,16 @@ class Stonecut45mill extends Component {
 
           data: `\nNOTIFICAÇÃO \nOR - APP\n\n${item.DateTime}\n\nA máquina: ${item.MachineID}\n\nestá com o seguinte erro: ${item.Alarms}\n\nVerifique o estado da máquina.`,
         });
+        axios.post("http://localhost:3001/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+
+          data: `\nNOTIFICAÇÃO \nOR - APP\n\n${item.DateTime}\n\nA máquina: ${item.MachineID}\n\nestá com o seguinte erro: ${item.Alarms}\n\nVerifique o estado da máquina.`,
+        });
+
+
+
+
         this.setState({ alarmTrigger: item.Alarms });
       }
     });

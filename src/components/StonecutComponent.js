@@ -64,21 +64,21 @@ class Stonecut extends Component {
       resultXML: "",
       timeStartCNC1: [],
       timeStartCNC2: [],
-      alarmTrigger: ""
+      alarmTrigger: "",
     };
     this.getData = this.getData.bind(this);
-    
+
     this.handleSelectItem = this.handleSelectItem.bind(this);
     //this.randomFunctionCorrente = this.randomFunctionCorrente.bind(this);
-    //this.randomFunction = this.randomFunction.bind(this);
+    this.randomFunction = this.randomFunction.bind(this);
     //this.randomFunctionKw = this.randomFunctionKw.bind(this);
     this.props.parentCallback(this.state.timeTotal);
     this.handleResponse = this.handleResponse.bind(this);
     this.renderMachine = this.renderMachine.bind(this);
     this.calcJob = this.calcJob.bind(this);
-   // this.convertXmlToJson = this.convertXmlToJson.bind(this);
+    // this.convertXmlToJson = this.convertXmlToJson.bind(this);
     this.calcIsOffLine = this.calcIsOffLine.bind(this);
-    this.calcWork = this. calcWork.bind(this);
+    this.calcWork = this.calcWork.bind(this);
     this.calcTimeStart = this.calcTimeStart.bind(this);
     console.log("Botão real time: ---->", this.props.realTime);
   }
@@ -114,7 +114,6 @@ class Stonecut extends Component {
     this.calcJob();
     //this.convertXmlToJson(XML);
     this.calcIsOffLine();
-    
   }
 
   async componentDidMount() {
@@ -134,65 +133,89 @@ class Stonecut extends Component {
   }
 
   calcWork = (value) => {
-    if (value === 0) return <AiIcons.AiOutlineStop size={50} color={"#e4181d"}/>
-    if (value === 1) return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />
-    if (value === 2) return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />  
-    if (value === 3) return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"}/> 
-    if (value === 4) return  <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine"/> 
-    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"} />
-  }
+    if (value === 0)
+      return <AiIcons.AiOutlineStop size={50} color={"#e4181d"} />;
+    if (value === 1)
+      return <AiIcons.AiOutlinePlayCircle size={50} color={"green"} />;
+    if (value === 2)
+      return <MdIcons.MdOutlineModeStandby size={50} color={"gray"} />;
+    if (value === 3)
+      return <AiIcons.AiOutlinePauseCircle size={50} color={"gray"} />;
+    if (value === 4)
+      return (
+        <BiIcons.BiError size={50} color={"gray"} className="blinkOffLine" />
+      );
+    if (value === 5) return <TbIcons.TbReplace size={50} color={"gray"} />;
+  };
 
   calcIsOffLine = (array) => {
     let currentDate = new Date();
-    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    currentDate.setTime(
+      currentDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000
+    );
     let result = new Boolean();
-    array?.map(({DateTime}) => {
-      console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
+    array?.map(({ DateTime }) => {
+      console.log(
+        Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13))
+      );
       let diff = currentDate.getTime() - Date.parse(DateTime);
-      let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60
-      console.log( "Diferença das datas STONECUT:", currentDate.getTime() - Date.parse(DateTime.toString().substring(0,DateTime.toString().length-5)),"Convertida em minutos: ", vmindiff);
-      console.log( parseInt(DateTime.substring(8,10)));
-      if(vmindiff > 10){
+      let vmindiff = Math.floor(diff / 1000 / 60); // in minutes
+      diff -= vmindiff * 1000 * 60;
+      console.log(
+        "Diferença das datas STONECUT:",
+        currentDate.getTime() -
+          Date.parse(
+            DateTime.toString().substring(0, DateTime.toString().length - 5)
+          ),
+        "Convertida em minutos: ",
+        vmindiff
+      );
+      console.log(parseInt(DateTime.substring(8, 10)));
+      if (vmindiff > 10) {
         //console.log("Teste para verificar se está offline: ", true);
         result = true;
-      }else result = false;
+      } else result = false;
 
       //return this.setState({isOffline: true});
     });
     return result;
-  }
+  };
 
   calcTimeStart = (array) => {
     const currentDate = new Date();
-    console.log("Tipo de timeZone: ", Math.abs(currentDate.getTimezoneOffset()))
+    console.log(
+      "Tipo de timeZone: ",
+      Math.abs(currentDate.getTimezoneOffset())
+    );
     //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = 0;
     let horas = 0;
     let minutos = 0;
-    result = array?.map(({DateTime}) => {
+    result = array?.map(({ DateTime }) => {
       //console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       //console.log("Tipo de timeZone BD: ", Math.abs(Date.parse(DateTime).getTimezoneOffset()))
       let diff = currentDate.getTime() - Date.parse(DateTime);
-      let vmindiff = Math.floor(diff/1000/60); // in minutes
-      diff -= vmindiff*1000*60 ;
-      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime),"Convertida em minutos: ", vmindiff);
-      return (vmindiff); 
+      let vmindiff = Math.floor(diff / 1000 / 60); // in minutes
+      diff -= vmindiff * 1000 * 60;
+      console.log(
+        "Diferença das datas :",
+        currentDate.getTime() - Date.parse(DateTime),
+        "Convertida em minutos: ",
+        vmindiff
+      );
+      return vmindiff;
     });
-    horas = Math.round((result/60));
-    minutos = result - ( Math.floor(((result/60) % 2 ) ) *60);
-    minutos = ((((minutos).toFixed(0)/60) % 2)*60).toFixed(0);
-   // console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
-  
-    if (minutos.length === 1){
-      return `${horas}h0${minutos}`
-    }
-    else if (minutos.length === 3){
+    horas = Math.round(result / 60);
+    minutos = result - Math.floor((result / 60) % 2) * 60;
+    minutos = (((minutos.toFixed(0) / 60) % 2) * 60).toFixed(0);
+    // console.log("Minutos: ", minutos  , "Tamanho dos minutos: ", minutos.toFixed(0).toString().length);
 
-      return `${horas}h${minutos}`
-    }
-    else return (`${horas}h${minutos}`)
-  }
+    if (minutos.length === 1) {
+      return `${horas}h0${minutos}`;
+    } else if (minutos.length === 3) {
+      return `${horas}h${minutos}`;
+    } else return `${horas}h${minutos}`;
+  };
 
   convertXmlToJson = (xmlString) => {
     axios
@@ -223,8 +246,6 @@ class Stonecut extends Component {
     const maquinaValues = this.renderSwitch(parentData);
     console.log(maquinaValues.maquina);
   };
-
- 
 
   handleSelectItem(key, dashboardItem) {
     console.log("Dashboard button:", dashboardItem);
@@ -346,25 +367,28 @@ class Stonecut extends Component {
     var min = 1900;
     var max = 2200;
     let rand = min + Math.random() * (min - max);
-    this.state.machine?.map((item)=>{
-    console.log("Trigger para notificação", item.Alarms)
-    if (item.Alarms !== 'Clear' && item.Alarms.substring(5,6)!=='0' && this.state.alarmTrigger !== item.Alarms){
-    axios.post("http://localhost:3001/sendnotification", {
+    this.state.machine?.map((item) => {
+      console.log("Trigger para notificação", item.Alarms);
+      if (
+        item.Alarms !== "Clear" &&
+        item.Alarms.substring(5, 6) !== "0" &&
+        this.state.alarmTrigger !== item.Alarms
+      ) {
+        axios.post("http://localhost:3001/sendnotification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
 
-          data:
-            "NOTIFICAÇÃO \nOR - APP\n\n" +
-            `${item.DateTime}` +
-            "\n\nA máquina: " +
-            `${item.MachineID}` +
-            " está com o seguinte erro: " +
-            `${item.Alarms}` +
-            "\n\nVerifique a máquina.",
+          data: `\nNOTIFICAÇÃO \nOR - APP\n\n${item.DateTime}\n\nA máquina: ${item.MachineID.toUpperCase()}\n\nEstá com o seguinte erro: ${item.Alarms}\n\nVerifique o estado da máquina.`,
         });
-        this.setState({alarmTrigger: item.Alarms})
-    }
-    
+        axios.post("http://localhost:3001/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+
+          data: `\nNOTIFICAÇÃO \nOR - APP\n\n${item.DateTime}\n\nA máquina: ${item.MachineID.toUpperCase()}\n\nEstá com o seguinte erro: ${item.Alarms}\n\nVerifique o estado da máquina.`,
+        });
+
+        this.setState({ alarmTrigger: item.Alarms });
+      }
     });
 
     if (this.props.realTime)
@@ -397,7 +421,7 @@ class Stonecut extends Component {
                 body: `WARNING \n ${date} \n A máquina ${this.state.selectedMaquina}, está com rotação elevada ${this.state.statusVelocidade}, verifique a máquina !!!`
             }).then(message => console.log(message.sid));*/
       }
-    return Math.round(rand);
+    return;
   };
 
   randomFunctionCorrente = () => {
@@ -426,18 +450,28 @@ class Stonecut extends Component {
   };
 
   calcJob = (array) => {
-      const initialValue = 0;
-      var result = array?.reduce((previousData, currentData) => (previousData - currentData)%5, initialValue
+    const initialValue = 0;
+    var result = array?.reduce(
+      (previousData, currentData) => (previousData - currentData) % 5,
+      initialValue
     );
-        
-        console.log("Calculo dos trabalhos realizados: ", result);
-        return array;
+
+    console.log("Calculo dos trabalhos realizados: ", result);
+    return array;
   };
 
   renderMachine = (machine) => {
     let currentDate = new Date();
     return machine?.map(
-      ({ DateTime, Alarms, MachineID, OnOffJob, OnOffAlimentacao, ProducaoAtual, Tensao }) => (
+      ({
+        DateTime,
+        Alarms,
+        MachineID,
+        OnOffJob,
+        OnOffAlimentacao,
+        ProducaoAtual,
+        Tensao,
+      }) => (
         <>
           <div className="container-dashboard-d ">
             <div className="row" eventkey={this.state.key}>
@@ -461,7 +495,9 @@ class Stonecut extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  { OnOffJob === 4  || OnOffJob === 3 ? "Standby" : OnOffAlimentacao}
+                  {OnOffJob === 4 || OnOffJob === 3
+                    ? "Standby"
+                    : OnOffAlimentacao}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
@@ -486,8 +522,9 @@ class Stonecut extends Component {
                 <h6>Tempo Ligada</h6>
 
                 <h2 style={{ color: "#333" }}>
-                        {(MachineID === "stonecut") ? this.calcTimeStart(this.state.timeStartCNC1) : this.calcTimeStart(this.state.timeStartCNC2) }
-                  
+                  {MachineID === "stonecut"
+                    ? this.calcTimeStart(this.state.timeStartCNC1)
+                    : this.calcTimeStart(this.state.timeStartCNC2)}
                 </h2>
                 <h6>
                   Start:{" "}
@@ -504,13 +541,12 @@ class Stonecut extends Component {
               </Card>
               <Card
                 eventkey={1}
-               // onClick={() => this.handleSelectItem(1, "pecas")}
+                // onClick={() => this.handleSelectItem(1, "pecas")}
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
                   (ProducaoAtual === 100 ? " blinkDone" : " ")
-                  
                 }
-                style={{maxWidth:"100%", minWidth:"320px", float:"left"}}
+                style={{ maxWidth: "100%", minWidth: "320px", float: "left" }}
               >
                 <h6>Produção</h6>
                 <span className="badgeWork">
@@ -527,7 +563,7 @@ class Stonecut extends Component {
                     animated
                     striped
                     variant={
-                        ProducaoAtual >= 90
+                      ProducaoAtual >= 90
                         ? "success"
                         : ProducaoAtual <= 30
                         ? "danger"
@@ -549,7 +585,13 @@ class Stonecut extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{Alarms !=="Clear" ? this.calcWork(4) : (OnOffJob === 4) ? this.calcWork(5) : this.calcWork(OnOffJob)}</h1>
+                <h1 style={{ color: "#333" }}>
+                  {Alarms !== "Clear"
+                    ? this.calcWork(4)
+                    : OnOffJob === 4
+                    ? this.calcWork(5)
+                    : this.calcWork(OnOffJob)}
+                </h1>
                 <h6>Estado</h6>
               </Card>
               <Card
@@ -568,14 +610,16 @@ class Stonecut extends Component {
               </Card>
               <Card
                 eventkey={5}
-               // onClick={() => this.handleSelectItem(5, "velocidade")}
+                // onClick={() => this.handleSelectItem(5, "velocidade")}
                 className={
                   "card-box-header" + (Alarms !== "Clear" ? " blink" : " ")
                 }
               >
                 <h6>Alarme</h6>
                 {Alarms.length > 6 ? (
-                  <h4 style={{ color: "#333", fontSize: 10 }}>{Alarms.substring(5,Alarms.length)}</h4>
+                  <h4 style={{ color: "#333", fontSize: 10 }}>
+                    {Alarms.substring(5, Alarms.length)}
+                  </h4>
                 ) : (
                   <h1 style={{ color: "#333" }}>{Alarms}</h1>
                 )}
@@ -598,25 +642,61 @@ class Stonecut extends Component {
     this.randomFunction();
     return (
       <>
-        {!(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarms: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          MachineID: "STONECUT",
-          OnOffJob: 0,
-          OnOffAlimentacao: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          ProducaoAtual: 0,
-          Tensao: 0
-        }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
+        {
+          !this.calcIsOffLine(this.state.machine)
+            ? this.renderMachine([
+                {
+                  DateTime: new Date(),
+                  Alarms: (
+                    <HiIcons.HiOutlineStatusOffline
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  MachineID: "STONECUT",
+                  OnOffJob: 0,
+                  OnOffAlimentacao: (
+                    <MdIcons.MdOutlinePowerOff
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  ProducaoAtual: 0,
+                  Tensao: 0,
+                },
+              ])
+            : this.renderMachine(
+                this.state.machine
+              ) /*this.renderMachine(this.state.machine?.slice(1))*/
+        }
 
-        {!(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
-          DateTime: new Date(),
-          Alarms: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          MachineID: "STONECUT45MILL",
-          OnOffJob: 0,
-          OnOffAlimentacao: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          ProducaoAtual: 0,
-          Tensao: 0
-        }]) : this.renderMachine(this.state.machine1)/*this.renderMachine(this.state.machine?.slice(1))*/}
+        {
+          !this.calcIsOffLine(this.state.machine1)
+            ? this.renderMachine([
+                {
+                  DateTime: new Date(),
+                  Alarms: (
+                    <HiIcons.HiOutlineStatusOffline
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  MachineID: "STONECUT45MILL",
+                  OnOffJob: 0,
+                  OnOffAlimentacao: (
+                    <MdIcons.MdOutlinePowerOff
+                      size={40}
+                      className="blinkOffLine"
+                    />
+                  ),
+                  ProducaoAtual: 0,
+                  Tensao: 0,
+                },
+              ])
+            : this.renderMachine(
+                this.state.machine1
+              ) /*this.renderMachine(this.state.machine?.slice(1))*/
+        }
       </>
     );
   }
