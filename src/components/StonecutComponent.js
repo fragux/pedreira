@@ -28,11 +28,12 @@ import * as BiIcons from "react-icons/bi";
 import * as TbIcons from "react-icons/tb";
 
 import { ApplicationInstance } from "twilio/lib/rest/api/v2010/account/application";
+import Machine from "./MachineComponent";
 //import { render } from '@testing-library/react';
 //import { alignAuto } from 'react-charts/dist/react-charts.development';
 //const client = require ('twilio')('AC30d90c932ea37c30c67b90ed466a24ad','d2994d9914dcabe2dd60190c96fb4b0d');
 
-class Dashboard extends Component {
+class Stonecut extends Component {
   constructor(props) {
     super(props);
     this.counterVelocidade = 0;
@@ -63,6 +64,7 @@ class Dashboard extends Component {
       resultXML: "",
       timeStartCNC1: [],
       timeStartCNC2: [],
+      alarmTrigger: ""
     };
     this.getData = this.getData.bind(this);
     
@@ -82,20 +84,20 @@ class Dashboard extends Component {
   }
 
   getData() {
-    axios.get("http://localhost:3001/machine/cnc1/last").then((response) => {
+    axios.get("http://localhost:3001/machine/cnc1/real").then((response) => {
       console.log(
         "Get DATA from function getData() and setInterval: ",
         response.data
       );
       this.setState({ machine: response.data });
     });
-    axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
+    /*axios.get("http://localhost:3001/machine/cnc2/last").then((response) => {
       console.log(
         "Get DATA from function getData() and setInterval: ",
         response.data
       );
       this.setState({ machine1: response.data });
-    });
+    });*/
 
     axios.get("http://localhost:3001/machine/cnc1/job").then((response) => {
       this.setState({ production1: response.data });
@@ -128,7 +130,7 @@ class Dashboard extends Component {
             //production: Production
           };
         });
-    }, 240000);
+    }, 30000);
   }
 
   calcWork = (value) => {
@@ -142,14 +144,14 @@ class Dashboard extends Component {
 
   calcIsOffLine = (array) => {
     let currentDate = new Date();
-    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = new Boolean();
     array?.map(({DateTime}) => {
       console.log( Math.abs(currentDate.getMinutes() - DateTime.substring(11, 13)));
       let diff = currentDate.getTime() - Date.parse(DateTime);
       let vmindiff = Math.floor(diff/1000/60); // in minutes
       diff -= vmindiff*1000*60
-      console.log( "Diferença das datas :", currentDate.getTime() - Date.parse(DateTime.toString().substring(0,DateTime.toString().length-5)),"Convertida em minutos: ", vmindiff);
+      console.log( "Diferença das datas STONECUT:", currentDate.getTime() - Date.parse(DateTime.toString().substring(0,DateTime.toString().length-5)),"Convertida em minutos: ", vmindiff);
       console.log( parseInt(DateTime.substring(8,10)));
       if(vmindiff > 10){
         //console.log("Teste para verificar se está offline: ", true);
@@ -344,10 +346,27 @@ class Dashboard extends Component {
     var min = 1900;
     var max = 2200;
     let rand = min + Math.random() * (min - max);
-    if (rand > 1850) {
-      this.state.statusVelocidade = true;
-      this.counterVelocidade++;
+    this.state.machine?.map((item)=>{
+    console.log("Trigger para notificação", item.Alarms)
+    if (item.Alarms !== 'Clear' && item.Alarms.substring(5,6)!=='0' && this.state.alarmTrigger !== item.Alarms){
+    axios.post("http://localhost:3001/sendnotification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+
+          data:
+            "NOTIFICAÇÃO \nOR - APP\n\n" +
+            `${item.DateTime}` +
+            "\n\nA máquina: " +
+            `${item.MachineID}` +
+            " está com o seguinte erro: " +
+            `${item.Alarms}` +
+            "\n\nVerifique a máquina.",
+        });
+        this.setState({alarmTrigger: item.Alarms})
     }
+    
+    });
+
     if (this.props.realTime)
       if (this.counterVelocidade > 10 && this.state.realTime) {
         this.counterVelocidade = 0;
@@ -418,19 +437,19 @@ class Dashboard extends Component {
   renderMachine = (machine) => {
     let currentDate = new Date();
     return machine?.map(
-      ({ DateTime, Alarm, Type, Job, Power, Production, Tension }) => (
+      ({ DateTime, Alarms, MachineID, OnOffJob, OnOffAlimentacao, ProducaoAtual, Tensao }) => (
         <>
           <div className="container-dashboard-d ">
             <div className="row" eventkey={this.state.key}>
               <Card
                 className={
-                  "card-box-header " +
-                  (Job === 4 || Job === 3 ? "blinkIdle" : "")
+                  "card-box-header blinkPlay" +
+                  (OnOffJob === 4 || OnOffJob === 3 ? "blinkIdle" : "")
                 }
-                style={{ backgroundColor: "#E4181D", color: "#ffffff" }}
+                style={{ backgroundColor: "green", color: "#ffffff" }}
                 onClick={() => this.handleSelectItem(1, "none")}
               >
-                <h5>{Type.toString().toUpperCase()}</h5>
+                <h5>{MachineID.toString().toUpperCase()}</h5>
               </Card>
               <Card
                 eventkey={2}
@@ -442,15 +461,15 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  { Job === 4  || Job === 3 ? "Standby" : Power}
+                  { OnOffJob === 4  || OnOffJob === 3 ? "Standby" : OnOffAlimentacao}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
                   className={
                     "spanc" +
-                    (Job === 1
+                    (OnOffJob === 1
                       ? " down"
-                      : Job === 4 || Job === 3
+                      : OnOffJob === 4 || OnOffJob === 3
                       ? " blink"
                       : " active")
                   }
@@ -467,40 +486,13 @@ class Dashboard extends Component {
                 <h6>Tempo Ligada</h6>
 
                 <h2 style={{ color: "#333" }}>
-                  {/*(Type === "stonecut") ? (currentDate.getHours().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(11, 13);
-                    })) : (currentDate.getHours().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(11, 13);
-                    }))}h
-                    {(Type === "stonecut") ? (Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC1?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : (Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString().length) === 1 ? "0" + Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString() : Math.abs(currentDate.getMinutes().toString() -
-                    this.state.timeStartCNC2?.map(({ DateTime }) => {
-                      return DateTime.toString().substring(14, 16);
-                    })).toString()*/}
-
-                    {(Type === "stonecut") ? this.calcTimeStart(this.state.timeStartCNC1) : this.calcTimeStart(this.state.timeStartCNC2) }
+                        {(MachineID === "stonecut") ? this.calcTimeStart(this.state.timeStartCNC1) : this.calcTimeStart(this.state.timeStartCNC2) }
                   
                 </h2>
                 <h6>
                   Start:{" "}
                   <b>
-                    {Type === "stonecut"
+                    {MachineID === "stonecut"
                       ? this.state.timeStartCNC1?.map(({ DateTime }) => {
                           return DateTime.toString().substring(11, 16);
                         })
@@ -515,7 +507,7 @@ class Dashboard extends Component {
                // onClick={() => this.handleSelectItem(1, "pecas")}
                 className={
                   "card-box-header col-lg col-md-6 col-sm-12" +
-                  (Production === 100 ? " blinkDone" : " ")
+                  (ProducaoAtual === 100 ? " blinkDone" : " ")
                   
                 }
                 style={{maxWidth:"100%", minWidth:"320px", float:"left"}}
@@ -524,24 +516,24 @@ class Dashboard extends Component {
                 <span className="badgeWork">
                   <Badge bg="danger" style={{ fontWeight: "lighter" }}>
                     {`# `}
-                    {Type === "stonecut"
+                    {MachineID === "stonecut"
                       ? this.calcJob(this.state.production1).length
                       : this.state.production2.length}
                   </Badge>
                 </span>
-                <h1 style={{ color: "#333" }}>{Production}%</h1>
+                <h1 style={{ color: "#333" }}>{ProducaoAtual}%</h1>
                 <h6>
                   <ProgressBar
                     animated
                     striped
                     variant={
-                      Production >= 90
+                        ProducaoAtual >= 90
                         ? "success"
-                        : Production <= 30
+                        : ProducaoAtual <= 30
                         ? "danger"
                         : "warning"
                     }
-                    now={Production}
+                    now={ProducaoAtual}
                     //label={`${Production}%`}
                     style={{ height: "26px" }}
                   />
@@ -557,7 +549,7 @@ class Dashboard extends Component {
                 }
               >
                 <h6>Trabalho</h6>
-                <h1 style={{ color: "#333" }}>{Alarm !=="Clear" ? this.calcWork(4) : (Job === 4) ? this.calcWork(5) : this.calcWork(Job)}</h1>
+                <h1 style={{ color: "#333" }}>{Alarms !=="Clear" ? this.calcWork(4) : (OnOffJob === 4) ? this.calcWork(5) : this.calcWork(OnOffJob)}</h1>
                 <h6>Estado</h6>
               </Card>
               <Card
@@ -570,7 +562,7 @@ class Dashboard extends Component {
               >
                 <h6>Tensão</h6>
                 <h1 style={{ color: "#333" }}>
-                  {Tension === null ? 0 : parseFloat(Tension).toFixed(0)}
+                  {Tensao === null ? 0 : parseFloat(Tensao).toFixed(0)}
                 </h1>
                 <h6>Volts</h6>
               </Card>
@@ -578,20 +570,20 @@ class Dashboard extends Component {
                 eventkey={5}
                // onClick={() => this.handleSelectItem(5, "velocidade")}
                 className={
-                  "card-box-header" + (Alarm !== "Clear" ? " blink" : " ")
+                  "card-box-header" + (Alarms !== "Clear" ? " blink" : " ")
                 }
               >
                 <h6>Alarme</h6>
-                {Alarm.length > 6 ? (
-                  <h4 style={{ color: "#333", fontSize: 10 }}>{Alarm.substring(5,Alarm.length)}</h4>
+                {Alarms.length > 6 ? (
+                  <h4 style={{ color: "#333", fontSize: 10 }}>{Alarms.substring(5,Alarms.length)}</h4>
                 ) : (
-                  <h1 style={{ color: "#333" }}>{Alarm}</h1>
+                  <h1 style={{ color: "#333" }}>{Alarms}</h1>
                 )}
 
                 <h6>Tipo</h6>
                 <span
                   className={
-                    "spanc" + (Alarm !== "Clear" ? " active" : " down")
+                    "spanc" + (Alarms !== "Clear" ? " active" : " down")
                   }
                 ></span>
               </Card>
@@ -603,31 +595,31 @@ class Dashboard extends Component {
   };
 
   render() {
-    
+    this.randomFunction();
     return (
       <>
         {!(this.calcIsOffLine(this.state.machine))? this.renderMachine([{
           DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
-          Production: 0,
-          Tension: 0
+          Alarms: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
+          MachineID: "STONECUT",
+          OnOffJob: 0,
+          OnOffAlimentacao: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
+          ProducaoAtual: 0,
+          Tensao: 0
         }]) : this.renderMachine(this.state.machine)/*this.renderMachine(this.state.machine?.slice(1))*/}      
 
         {!(this.calcIsOffLine(this.state.machine1))? this.renderMachine([{
           DateTime: new Date(),
-          Alarm: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
-          Type: "STONECUT45MILL",
-          Job: 0,
-          Power: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine" />,
-          Production: 0,
-          Tension: 0
+          Alarms: <HiIcons.HiOutlineStatusOffline size={40} className="blinkOffLine"/>,
+          MachineID: "STONECUT45MILL",
+          OnOffJob: 0,
+          OnOffAlimentacao: <MdIcons.MdOutlinePowerOff size={40} className="blinkOffLine"/>,
+          ProducaoAtual: 0,
+          Tensao: 0
         }]) : this.renderMachine(this.state.machine1)/*this.renderMachine(this.state.machine?.slice(1))*/}
       </>
     );
   }
 }
 
-export default Dashboard;
+export default Stonecut;

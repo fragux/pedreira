@@ -6,6 +6,8 @@ import Dashboard from "./DashBoardComponent";
 import DashboardGeral from "./DashBoardGeral";
 import CNC from "./CncComponent";
 import LousadaMinorca from "./LousadaMinorcaComponent";
+import Stonecut from "./StonecutComponent";
+import Stonecut45mill from "./Stonecut45millComponent";
 import CNCDashBoard from "./CncDashboardComponent";
 import LousadaMinorcaDashBoard from "./LousadaMinorcaDashboard";
 import "./DashBoardComponent.css";
@@ -111,7 +113,7 @@ renderTimeTotal(parentData){
       timePeriod: this.state.timePeriod,
       realTime: this.state.realTime,
       isLoading: false
-    }), 1000)
+    }), 5000)
     this.setState({isLoading: true});
   }
 
@@ -153,6 +155,18 @@ renderTimeTotal(parentData){
           <>
             {" "}
             <CNC
+              realTime={this.state.realTime}
+              selectedMaquina={this.state.machine}
+              parentCallback={this.handleTimeback}
+              currentMode={this.state.timePeriod}
+            />
+            <Stonecut
+              realTime={this.state.realTime}
+              selectedMaquina={this.state.machine}
+              parentCallback={this.handleTimeback}
+              currentMode={this.state.timePeriod}
+            />
+            <Stonecut45mill
               realTime={this.state.realTime}
               selectedMaquina={this.state.machine}
               parentCallback={this.handleTimeback}

@@ -126,11 +126,11 @@ class Dashboard extends Component {
     this.getData();
 
    
-      setInterval( () => this.setState({
+      /*setInterval( () => this.setState({
         timePeriod: this.state.timePeriod,
         realTime: this.state.realTime,
         isLoading: false
-      }), 1000)
+      }), 1000)*/
       this.setState({isLoading: true});
    
     setInterval(() => {
@@ -195,10 +195,8 @@ class Dashboard extends Component {
   };
 
   calcTimeStart = (array) => {
-    let currentDate = new Date();
-    currentDate.setTime(
-      currentDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    );
+    const currentDate = new Date();
+    //currentDate.setTime(      currentDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000    );
     let result = 0;
     let horas = 0;
     let minutos = 0;
@@ -655,7 +653,7 @@ class Dashboard extends Component {
     return this.renderSelectedMachine(this.props.selectedMaquina) ? (
       <>
         {
-          this.calcIsOffLine(this.state.machine)
+          !this.calcIsOffLine(this.state.machine)
             ? this.renderMachine([
                 {
                   DateTime: new Date(),
@@ -686,7 +684,7 @@ class Dashboard extends Component {
     ) : (
       <>
         {
-          this.calcIsOffLine(this.state.machine1)
+          !this.calcIsOffLine(this.state.machine1)
             ? this.renderMachine([
                 {
                   DateTime: new Date(),

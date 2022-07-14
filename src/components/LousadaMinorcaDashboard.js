@@ -128,7 +128,7 @@ class Dashboard extends Component {
 
   calcIsOffLine = (array) => {
     let currentDate = new Date();
-    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = new Boolean();
     array?.map(({ DateTime }) => {
       console.log(
@@ -155,9 +155,9 @@ class Dashboard extends Component {
   };
 
   calcTimeStart = (array) => {
-    let currentDate = new Date();
+    const currentDate = new Date();
     console.log("Tipo de timeZone: ", Math.abs(currentDate.getTimezoneOffset()))
-    currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
+    //currentDate.setTime( currentDate.getTime() - new Date().getTimezoneOffset()*60*1000 );
     let result = 0;
     let horas = 0;
     let minutos = 0;
@@ -454,7 +454,7 @@ class Dashboard extends Component {
               >
                 <h6>Power</h6>
                 <h2 style={{ color: "#333" }}>
-                  {Current}                  {/*Start === 0 ? "Standby" : Start === 1 ? "On" : "Off"*/}
+                  {Current === 0 ? "Off" : "On"}                  {/*Start === 0 ? "Standby" : Start === 1 ? "On" : "Off"*/}
                 </h2>
                 <h6>Ligado/Desligado</h6>
                 <span
@@ -545,8 +545,8 @@ class Dashboard extends Component {
                 </span>
                 <h1 style={{ color: "#333" }}>
                   {TargetProduction === 0
-                    ? `${RealTimeProduction}/${TargetProduction}`
-                    : `${RealTimeProduction}/${TargetProduction}`}
+                    ? `${TargetProduction}/${RealTimeProduction}`
+                    : `${TargetProduction}/${RealTimeProduction}`}
                 </h1>
                 <h6>
                   {/* <ProgressBar

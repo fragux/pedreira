@@ -19,7 +19,7 @@
 }
 
 @keyframes blinkPlay { 
-   50% { color: #12ac0d; } 
+   50% { background: #08a903; } 
 }
 
  .row {
@@ -48,7 +48,7 @@
 }
 
 .blinkPlay{ /*or other element you want*/
-   animation: blinkPlay .5s step-end infinite alternate;
+   animation: blinkPlay .6s step-end infinite alternate;
 }
 
  .card-box-header-d {
@@ -97,3 +97,9 @@
 .tabs:active {
    color: #720d0d !important;
 }
+
+.card-box-header .real {
+   transform: none;
+   border: none;
+   background: #720d0d !important;
+ }
